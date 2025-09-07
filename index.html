@@ -5,21 +5,25 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>FiveM Menu</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap');
 
         body {
-            font-family: 'Roboto', sans-serif;
+            font-family: 'Inter', sans-serif;
             background: transparent;
             overflow: hidden;
+            color: #e2e8f0;
         }
 
         .menu-container {
-            background: rgba(17, 24, 39, 0.95);
-            backdrop-filter: blur(8px);
-            border-radius: 12px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+            background: rgba(15, 23, 42, 0.9);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
             transition: all 0.3s ease;
+            animation: fadeIn 0.3s ease;
         }
 
         .menu-item {
@@ -27,83 +31,111 @@
         }
 
         .menu-item:hover {
-            background-color: rgba(255, 255, 255, 0.1);
-            transform: translateX(5px);
+            background-color: rgba(255, 255, 255, 0.15);
+            transform: scale(1.02);
         }
 
         .menu-item.active {
-            background-color: rgba(59, 130, 246, 0.2);
-            border-left: 4px solid #3b82f6;
+            background: linear-gradient(to right, rgba(99, 102, 241, 0.3), transparent);
+            border-left: 4px solid #6366f1;
         }
 
         .submenu {
             animation: slideIn 0.3s ease;
         }
 
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
         @keyframes slideIn {
-            from {
-                opacity: 0;
-                transform: translateX(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateX(0);
-            }
+            from { opacity: 0; transform: translateX(20px); }
+            to { opacity: 1; transform: translateX(0); }
         }
 
         .checkbox-container input:checked + .checkmark {
-            background-color: #3b82f6;
-            border-color: #3b82f6;
+            background-color: #6366f1;
+            border-color: #6366f1;
         }
 
         .slider {
             -webkit-appearance: none;
             appearance: none;
-            background: #4b5563;
-            height: 4px;
-            border-radius: 2px;
+            background: #475569;
+            height: 6px;
+            border-radius: 3px;
         }
 
         .slider::-webkit-slider-thumb {
             -webkit-appearance: none;
             appearance: none;
-            width: 16px;
-            height: 16px;
-            background: #3b82f6;
+            width: 18px;
+            height: 18px;
+            background: #6366f1;
             border-radius: 50%;
             cursor: pointer;
+            box-shadow: 0 0 8px rgba(99, 102, 241, 0.5);
+        }
+
+        .text-input-container {
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(10px);
         }
 
         .text-input {
             transition: all 0.3s ease;
+            background: #1e293b;
+            border: 1px solid #4b5563;
         }
 
         .text-input:focus {
-            border-color: #3b82f6;
-            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+            border-color: #6366f1;
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
+        }
+
+        .floating-label {
+            position: absolute;
+            top: 50%;
+            left: 1rem;
+            transform: translateY(-50%);
+            color: #9ca3af;
+            transition: all 0.2s ease;
+            pointer-events: none;
+        }
+
+        .text-input:not(:placeholder-shown) + .floating-label,
+        .text-input:focus + .floating-label {
+            top: 0.5rem;
+            font-size: 0.75rem;
+            color: #6366f1;
         }
     </style>
 </head>
-<body class="text-gray-200">
-    <div id="menu" class="menu-container w-80 max-h-[80vh] overflow-y-auto hidden absolute top-10 left-10">
-        <div id="menu-header" class="px-4 py-3 border-b border-gray-700">
-            <h1 class="text-lg font-bold text-white">FiveM Menu</h1>
+<body>
+    <div id="menu" class="menu-container w-full max-w-md max-h-[80vh] overflow-y-auto hidden absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
+        <div id="menu-header" class="px-6 py-4 border-b border-slate-700">
+            <h1 class="text-xl font-bold text-white">FiveM Control Panel</h1>
         </div>
-        <div id="menu-items" class="px-2 py-2"></div>
+        <div id="menu-items" class="px-4 py-4"></div>
     </div>
 
-    <div id="text-input-container" class="hidden fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-        <div class="bg-gray-900 rounded-lg p-6 w-96">
-            <h2 id="text-input-question" class="text-lg font-medium text-white mb-4"></h2>
-            <input
-                id="text-input"
-                type="text"
-                class="text-input w-full bg-gray-800 text-white border border-gray-600 rounded-lg px-4 py-2 focus:outline-none"
-                autocomplete="off"
-            >
-            <div class="mt-4 flex justify-end space-x-2">
-                <button id="text-input-cancel" class="px-4 py-2 bg-gray-700 text-white rounded-lg hover:bg-gray-600">Cancel</button>
-                <button id="text-input-submit" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-500">Submit</button>
+    <div id="text-input-container" class="hidden fixed inset-0 flex items-center justify-center text-input-container">
+        <div class="bg-slate-900 rounded-xl p-8 w-full max-w-md">
+            <h2 id="text-input-question" class="text-lg font-medium text-white mb-6"></h2>
+            <div class="relative">
+                <input
+                    id="text-input"
+                    type="text"
+                    class="text-input w-full text-white rounded-lg px-4 py-3 focus:outline-none"
+                    autocomplete="off"
+                    aria-label="Text input"
+                >
+                <label for="text-input" class="floating-label"></label>
+            </div>
+            <div class="mt-6 flex justify-end space-x-3">
+                <button id="text-input-cancel" class="px-5 py-2 bg-slate-700 text-white rounded-lg hover:bg-slate-600 transition-colors">Cancel</button>
+                <button id="text-input-submit" class="px-5 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-500 transition-colors">Submit</button>
             </div>
         </div>
     </div>
@@ -113,29 +145,36 @@
         let currentIndex = 0;
         let isMenuVisible = false;
         let isTextInputVisible = false;
+        let currentInputType = 'general';
 
-        // Initialize WebSocket or NUI communication
+        // Initialize NUI communication
         window.addEventListener('message', (event) => {
-            const data = event.data;
-            switch (data.action) {
-                case 'setVisible':
-                    toggleMenu(data.visible);
-                    break;
-                case 'setCurrent':
-                    updateMenu(data.menu, data.current);
-                    break;
-                case 'openTextInput':
-                    openTextInput(data);
-                    break;
-                case 'closeTextInput':
-                    closeTextInput();
-                    break;
-                case 'updateTextInput':
-                    updateTextInput(data.value);
-                    break;
-                case 'requestClipboard':
-                    sendClipboardData();
-                    break;
+            try {
+                const data = event.data;
+                switch (data.action) {
+                    case 'setVisible':
+                        toggleMenu(data.visible);
+                        break;
+                    case 'setCurrent':
+                        updateMenu(data.menu, data.current);
+                        break;
+                    case 'openTextInput':
+                        openTextInput(data);
+                        break;
+                    case 'closeTextInput':
+                        closeTextInput();
+                        break;
+                    case 'updateTextInput':
+                        updateTextInput(data.value);
+                        break;
+                    case 'requestClipboard':
+                        sendClipboardData();
+                        break;
+                    default:
+                        console.warn('Unknown action:', data.action);
+                }
+            } catch (err) {
+                console.error('Error handling message:', err);
             }
         });
 
@@ -143,37 +182,61 @@
             const menu = document.getElementById('menu');
             menu.classList.toggle('hidden', !visible);
             isMenuVisible = visible;
+            if (visible) {
+                menu.focus();
+            }
         }
 
         function updateMenu(menu, index) {
-            currentMenu = menu;
-            currentIndex = index;
+            currentMenu = menu || [];
+            currentIndex = Math.max(0, Math.min(index, currentMenu.length - 1));
             const menuItems = document.getElementById('menu-items');
-            menuItems.innerHTML = '';
+            const existingItems = Array.from(menuItems.children);
 
+            // Create new menu items
             menu.forEach((item, i) => {
-                const div = document.createElement('div');
-                div.className = `menu-item px-4 py-2 rounded-lg flex items-center space-x-3 cursor-pointer ${i === index ? 'active' : ''}`;
-                
-                // Add icon if present
+                let div = existingItems[i] || document.createElement('div');
+                div.className = `menu-item px-4 py-3 rounded-lg flex items-center space-x-4 cursor-pointer ${i === currentIndex ? 'active' : ''}`;
+                div.setAttribute('role', 'menuitem');
+                div.setAttribute('aria-label', item.label);
+                div.setAttribute('aria-selected', i === currentIndex);
+
+                // Clear existing content
+                div.innerHTML = '';
+
+                // Add icon
                 if (item.icon) {
                     const icon = document.createElement('i');
-                    icon.className = `ph-${item.icon} text-blue-400`;
+                    icon.className = `ph-${item.icon} text-indigo-400 text-lg`;
                     div.appendChild(icon);
                 }
 
+                // Add label
                 const label = document.createElement('span');
-                label.className = 'flex-grow';
+                label.className = 'flex-grow text-sm';
                 label.textContent = item.label;
                 div.appendChild(label);
 
+                // Handle item types
                 if (item.type === 'submenu') {
                     const arrow = document.createElement('i');
-                    arrow.className = 'ph-caret-right text-gray-400';
+                    arrow.className = 'ph-caret-right text-slate-400';
                     div.appendChild(arrow);
                     div.onclick = () => sendMessage({ action: 'navigate', index: i });
+                    div.tabIndex = 0;
+                    div.onkeydown = (e) => {
+                        if (e.key === 'Enter' || e.key === ' ') {
+                            sendMessage({ action: 'navigate', index: i });
+                        }
+                    };
                 } else if (item.type === 'button') {
                     div.onclick = () => sendMessage({ action: 'confirm', index: i });
+                    div.tabIndex = 0;
+                    div.onkeydown = (e) => {
+                        if (e.key === 'Enter' || e.key === ' ') {
+                            sendMessage({ action: 'confirm', index: i });
+                        }
+                    };
                 } else if (item.type === 'checkbox') {
                     const checkboxContainer = document.createElement('div');
                     checkboxContainer.className = 'checkbox-container';
@@ -182,11 +245,10 @@
                     checkbox.checked = item.checked;
                     checkbox.className = 'hidden';
                     checkbox.id = `checkbox-${i}`;
+                    checkbox.setAttribute('aria-label', `Toggle ${item.label}`);
                     const checkmark = document.createElement('span');
-                    checkmark.className = 'checkmark w-5 h-5 border border-gray-400 rounded bg-gray-700 flex items-center justify-center';
-                    if (item.checked) {
-                        checkmark.innerHTML = '<i class="ph-check text-white"></i>';
-                    }
+                    checkmark.className = 'checkmark w-5 h-5 border border-slate-400 rounded bg-slate-700 flex items-center justify-center';
+                    checkmark.innerHTML = item.checked ? '<i class="ph-check text-white"></i>' : '';
                     checkbox.onchange = (e) => {
                         checkmark.innerHTML = e.target.checked ? '<i class="ph-check text-white"></i>' : '';
                         sendMessage({ action: 'confirm', index: i, value: e.target.checked });
@@ -198,15 +260,17 @@
                     const slider = document.createElement('input');
                     slider.type = 'range';
                     slider.className = 'slider w-full';
-                    slider.min = item.min;
-                    slider.max = item.max;
-                    slider.value = item.value;
+                    slider.min = item.min || 0;
+                    slider.max = item.max || 100;
+                    slider.value = item.value || 0;
+                    slider.setAttribute('aria-label', `Adjust ${item.label}`);
                     slider.oninput = (e) => sendMessage({ action: 'change', index: i, value: parseInt(e.target.value) });
                     slider.onchange = (e) => sendMessage({ action: 'confirm', index: i, value: parseInt(e.target.value) });
                     div.appendChild(slider);
                 } else if (item.type === 'scroll') {
                     const select = document.createElement('select');
-                    select.className = 'bg-gray-700 text-white rounded-lg px-2 py-1';
+                    select.className = 'bg-slate-700 text-white rounded-lg px-2 py-1 text-sm';
+                    select.setAttribute('aria-label', `Select ${item.label}`);
                     item.options.forEach((opt, optIndex) => {
                         const option = document.createElement('option');
                         option.value = opt.value;
@@ -218,25 +282,42 @@
                     div.appendChild(select);
                 }
 
-                menuItems.appendChild(div);
+                if (!existingItems[i]) {
+                    menuItems.appendChild(div);
+                }
             });
+
+            // Remove extra items
+            while (menuItems.children.length > menu.length) {
+                menuItems.removeChild(menuItems.lastChild);
+            }
         }
 
         function openTextInput(data) {
             const container = document.getElementById('text-input-container');
             const input = document.getElementById('text-input');
             const question = document.getElementById('text-input-question');
+            const label = document.querySelector('.floating-label');
 
             question.textContent = data.question;
-            input.placeholder = data.placeholder;
+            label.textContent = data.placeholder;
             input.value = data.value;
             input.maxLength = data.maxLength;
             input.type = data.inputType === 'numeric' ? 'number' : 'text';
+            currentInputType = data.inputType || 'general';
             container.classList.remove('hidden');
             isTextInputVisible = true;
             input.focus();
 
-            // Prevent form submission on Enter
+            input.oninput = (e) => {
+                const value = e.target.value;
+                if (currentInputType === 'numeric' && !/^[0-9]*$/.test(value)) {
+                    e.target.value = value.replace(/[^0-9]/g, '');
+                } else if (currentInputType === 'alphanumeric' && !/^[a-zA-Z0-9_]*$/.test(value)) {
+                    e.target.value = value.replace(/[^a-zA-Z0-9_]/g, '');
+                }
+            };
+
             input.onkeydown = (e) => {
                 if (e.key === 'Enter') {
                     e.preventDefault();
@@ -264,24 +345,31 @@
         }
 
         function sendClipboardData() {
-            if (navigator.clipboard) {
-                navigator.clipboard.readText().then(text => {
-                    sendMessage({ action: 'clipboardData', value: text });
-                }).catch(err => {
-                    console.error('Failed to read clipboard:', err);
+            try {
+                if (navigator.clipboard) {
+                    navigator.clipboard.readText().then(text => {
+                        sendMessage({ action: 'clipboardData', value: text });
+                    }).catch(err => {
+                        console.error('Failed to read clipboard:', err);
+                        sendMessage({ action: 'clipboardData', value: '' });
+                    });
+                } else {
+                    console.warn('Clipboard API not available');
                     sendMessage({ action: 'clipboardData', value: '' });
-                });
-            } else {
+                }
+            } catch (err) {
+                console.error('Error accessing clipboard:', err);
                 sendMessage({ action: 'clipboardData', value: '' });
             }
         }
 
         function sendMessage(data) {
-            window.postMessage(data, '*');
+            try {
+                window.postMessage(data, '*');
+            } catch (err) {
+                console.error('Error sending message:', err);
+            }
         }
-
-        // Prevent default form behavior
-        document.addEventListener('submit', (e) => e.preventDefault());
     </script>
 </body>
 </html>
