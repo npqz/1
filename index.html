@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FiveM Menu</title>
+    <title> Zx7 Menu</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
     <style>
@@ -110,12 +110,21 @@
             font-size: 0.75rem;
             color: #6366f1;
         }
+
+        .esp-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
     </style>
 </head>
 <body>
     <div id="menu" class="menu-container w-full max-w-md max-h-[80vh] overflow-y-auto hidden absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
         <div id="menu-header" class="px-6 py-4 border-b border-slate-700">
-            <h1 class="text-xl font-bold text-white">FiveM Control Panel</h1>
+            <h1 class="text-xl font-bold text-white">Merged Menu</h1>
         </div>
         <div id="menu-items" class="px-4 py-4"></div>
     </div>
@@ -139,6 +148,8 @@
             </div>
         </div>
     </div>
+
+    <div id="esp-container" class="esp-container"></div>
 
     <script>
         let currentMenu = [];
@@ -170,6 +181,9 @@
                     case 'requestClipboard':
                         sendClipboardData();
                         break;
+                    case 'updateESP':
+                        updateESP(data.espData);
+                        break;
                     default:
                         console.warn('Unknown action:', data.action);
                 }
@@ -195,7 +209,7 @@
 
             // Create new menu items
             menu.forEach((item, i) => {
-                let div = existingItems[i] || document.createElement('div');
+                let div = existingItems[i] or document.createElement('div');
                 div.className = `menu-item px-4 py-3 rounded-lg flex items-center space-x-4 cursor-pointer ${i === currentIndex ? 'active' : ''}`;
                 div.setAttribute('role', 'menuitem');
                 div.setAttribute('aria-label', item.label);
@@ -222,7 +236,7 @@
                     const arrow = document.createElement('i');
                     arrow.className = 'ph-caret-right text-slate-400';
                     div.appendChild(arrow);
-                    div.onclick = () => sendMessage({ action: 'navigate', index: i });
+                    div.onclick = () => sendMessage({ action = 'navigate', index: i });
                     div.tabIndex = 0;
                     div.onkeydown = (e) => {
                         if (e.key === 'Enter' || e.key === ' ') {
@@ -233,7 +247,7 @@
                     div.onclick = () => sendMessage({ action: 'confirm', index: i });
                     div.tabIndex = 0;
                     div.onkeydown = (e) => {
-                        if (e.key === 'Enter' || e.key === ' ') {
+                        if (e.key === 'Enter' or e.key === ' ') {
                             sendMessage({ action: 'confirm', index: i });
                         }
                     };
@@ -369,6 +383,19 @@
             } catch (err) {
                 console.error('Error sending message:', err);
             }
+        }
+
+        function updateESP(espData) {
+            const espContainer = document.getElementById('esp-container');
+            espContainer.innerHTML = '';
+            espData.forEach(data => {
+                const div = document.createElement('div');
+                div.style.position = 'absolute';
+                div.style.color = 'red';
+                div.style.fontSize = '12px';
+                div.textContent = `${data.name} (${data.distance}m)`;
+                espContainer.appendChild(div);
+            });
         }
     </script>
 </body>
