@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" style="background: transparent;">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -11,9 +11,13 @@
             box-sizing: border-box;
         }
         
+        html {
+            background: transparent !important;
+        }
+        
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: transparent;
+            background: transparent !important;
             color: white;
             display: flex;
             justify-content: flex-end;
@@ -29,9 +33,9 @@
             border-radius: 8px;
             box-shadow: 0 8px 32px rgba(139, 0, 0, 0.6);
             min-width: 500px;
-            max-width: 700px;
-            width: 600px;
-            margin: 20px;
+            max-width: 600px;
+            width: 550px;
+            margin: 10px;
             display: flex;
             flex-direction: column;
             backdrop-filter: blur(10px);
@@ -182,6 +186,16 @@
             font-weight: bold;
         }
         
+        .back-option {
+            color: #00ff00 !important;
+            border-left-color: #00ff00 !important;
+        }
+        
+        .back-option:hover {
+            background-color: rgba(0, 255, 0, 0.2);
+            border-left-color: #00ff00;
+        }
+        
         .footer {
             background-color: rgba(0, 0, 0, 0.6);
             padding: 10px 16px;
@@ -241,6 +255,8 @@
             <div class="content-area">
                 <div class="tab-content active" id="player">
                     <div class="content-title">Player Options</div>
+                    <div class="option-item">Teleport Waypoint</div>
+                    <div class="option-item">Noclip</div>
                     <div class="option-item">God Mode</div>
                     <div class="option-item">Infinite Stamina</div>
                     <div class="option-item">Super Jump</div>
@@ -248,14 +264,26 @@
                     <div class="option-item">No Ragdoll</div>
                 </div>
                 
-                <div class="tab-content" id="server">
-                    <div class="content-title">Server Options</div>
-                    <div class="option-item">Server Info</div>
-                    <div class="option-item">Player List</div>
+            <div class="tab-content" id="Online Players">
+                    <div class="content-title">Online Players (Troll Options)</div>
                     <div class="option-item">Spectate Player</div>
                     <div class="option-item">Teleport to Player</div>
+                    <div class="option-item">Fall Player</div> <!-- Client-side: Apply ragdoll force locally on target ped -->
+                    <div class="option-item">Explode Nearby</div> <!-- Client-side explosion effects only in your view -->
+                    <div class="option-item">Spam Effects</div> <!-- Client-side screen glitch around player -->
+                    <div class="option-item">Spam Cars</div> 
                 </div>
-                
+
+           <div class="tab-content" id="Online Vehicles">
+                    <div class="content-title">Online Vehicles (Troll Options)</div>
+                    <div class="option-item">Spectate Vehicle</div>
+                    <div class="option-item">Teleport to Vehicle</div>
+                    <div class="option-item">Boost Vehicle</div> 
+                    <div class="option-item">Break Engine</div> 
+                    <div class="option-item">Break All Wheels</div> 
+                   <div class="option-item">Kick From Vehicle</div>
+                    <div class="option-item">Launch Vehicle</div> 
+                </div>
                 <div class="tab-content" id="weapon">
                     <div class="content-title">Weapon Options</div>
                     <div class="option-item">Give All Weapons</div>
@@ -264,18 +292,12 @@
                     <div class="option-item">Rapid Fire</div>
                     <div class="option-item">Explosive Bullets</div>
                 </div>
-                
-                <div class="tab-content" id="combat">
-                    <div class="content-title">Combat Options</div>
-                    <div class="option-item">Aimbot</div>
-                    <div class="option-item">ESP</div>
-                    <div class="option-item">Auto Heal</div>
-                    <div class="option-item">Damage Multiplier</div>
-                </div>
+
                 
                 <div class="tab-content" id="vehicle">
                     <div class="content-title">Vehicle Options</div>
                     <div class="option-item">Spawn Vehicle</div>
+                    <div class="option-item">Max Performance</div>
                     <div class="option-item">Repair Vehicle</div>
                     <div class="option-item">Boost Speed</div>
                     <div class="option-item">Rainbow Paint</div>
@@ -286,15 +308,14 @@
                     <div class="option-item">Night Vision</div>
                     <div class="option-item">Thermal Vision</div>
                     <div class="option-item">Custom FOV</div>
+                    <div class="option-item">ESP</div>
                     <div class="option-item">No HUD</div>
                 </div>
                 
                 <div class="tab-content" id="misc">
                     <div class="content-title">Misc Options</div>
-                    <div class="option-item">Teleport Waypoint</div>
                     <div class="option-item">Time Control</div>
                     <div class="option-item">Weather Control</div>
-                    <div class="option-item">Noclip</div>
                 </div>
                 
                 <div class="tab-content" id="settings">
@@ -326,6 +347,12 @@
         const tabContents = document.querySelectorAll('.tab-content');
         const sidebar = document.querySelector('.sidebar');
 
+        // Sub-menu state
+        let menuState = 'main'; // 'main', 'playerlist', 'playeraction'
+        let originalServerContent = '';
+        let originalPlayerListContent = '';
+        let currentPlayer = '';
+
         function switchTab(tabElement) {
             const tabName = tabElement.getAttribute('data-tab');
             
@@ -343,7 +370,20 @@
             currentTab = Array.from(tabs).indexOf(tabElement);
             document.getElementById('counter').innerHTML = (currentTab + 1) + '/9';
             
+            // Reset sub-menu if switching tabs
+            if (menuState !== 'main') {
+                resetToMain();
+            }
+            
             console.log('Switched to: ' + tabName);
+        }
+
+        function resetToMain() {
+            menuState = 'main';
+            const serverContent = document.getElementById('server');
+            if (serverContent) {
+                serverContent.innerHTML = originalServerContent;
+            }
         }
 
         function getActiveOptions() {
@@ -433,15 +473,92 @@
                     updateOptionSelection();
                 } else if (event.key === 'Enter') {
                     event.preventDefault();
-                    // Select/activate the option
-                    console.log('Selected option:', options[currentOption].textContent);
-                    // Add your option activation logic here
+                    const selectedOption = options[currentOption];
+                    const optionText = selectedOption.textContent.trim();
+                    const tabName = tabs[currentTab].getAttribute('data-tab');
+                    const activeContent = document.querySelector('.tab-content.active');
+
+                    if (menuState === 'main') {
+                        if (tabName === 'server' && optionText === 'Player List') {
+                            menuState = 'playerlist';
+                            const playerListHTML = `
+                                <div class="content-title">Player List</div>
+                                <div class="option-item">Player1</div>
+                                <div class="option-item">Player2</div>
+                                <div class="option-item">Player3</div>
+                                <div class="option-item back-option">Back</div>
+                            `;
+                            originalPlayerListContent = playerListHTML;
+                            activeContent.innerHTML = playerListHTML;
+                            currentOption = 0;
+                            updateOptionSelection();
+                            return;
+                        } else {
+                            console.log('Selected option:', optionText);
+                            return;
+                        }
+                    } else if (menuState === 'playerlist') {
+                        if (optionText === 'Back') {
+                            menuState = 'main';
+                            activeContent.innerHTML = originalServerContent;
+                            currentOption = 1; // Player List index
+                            updateOptionSelection();
+                            return;
+                        } else {
+                            // Select player
+                            currentPlayer = optionText;
+                            menuState = 'playeraction';
+                            const playerActionHTML = `
+                                <div class="content-title">Actions for ${currentPlayer}</div>
+                                <div class="option-item">Teleport To</div>
+                                <div class="option-item">Spectate</div>
+                                <div class="option-item">Kick</div>
+                                <div class="option-item">Freeze</div>
+                                <div class="option-item">Ban</div>
+                                <div class="option-item back-option">Back to List</div>
+                            `;
+                            activeContent.innerHTML = playerActionHTML;
+                            currentOption = 0;
+                            updateOptionSelection();
+                            return;
+                        }
+                    } else if (menuState === 'playeraction') {
+                        if (optionText === 'Back to List') {
+                            menuState = 'playerlist';
+                            activeContent.innerHTML = originalPlayerListContent;
+                            // Reset to top of list
+                            currentOption = 0;
+                            updateOptionSelection();
+                            return;
+                        } else {
+                            console.log(`Performing action: ${optionText} on ${currentPlayer}`);
+                            // Here: send message to Lua, e.g., window.postMessage({action: optionText, target: currentPlayer}, '*');
+                            return;
+                        }
+                    }
                 } else if (event.key === 'Backspace') {
                     event.preventDefault();
-                    exitOptionMode();
+                    if (menuState !== 'main') {
+                        const activeContent = document.querySelector('.tab-content.active');
+                        if (menuState === 'playeraction') {
+                            menuState = 'playerlist';
+                            activeContent.innerHTML = originalPlayerListContent;
+                            currentOption = 0;
+                        } else if (menuState === 'playerlist') {
+                            menuState = 'main';
+                            activeContent.innerHTML = originalServerContent;
+                            currentOption = 1; // Back to Player List
+                        }
+                        updateOptionSelection();
+                    } else {
+                        exitOptionMode();
+                    }
                 }
             }
         });
+
+        // Initialize original content after DOM load
+        originalServerContent = document.getElementById('server').innerHTML;
 
         // Listen for messages from Lua
         window.addEventListener('message', function(event) {
