@@ -20,6 +20,7 @@
             align-items: flex-start;
             height: 100vh;
             width: 100vw;
+            overflow: hidden;
         }
         
         .menu {
@@ -80,6 +81,11 @@
             border-right: 1px solid #8B0000;
             padding: 8px 0;
             overflow-y: auto;
+            transition: opacity 0.3s;
+        }
+        
+        .sidebar.dimmed {
+            opacity: 0.3;
         }
         
         .tab {
@@ -113,6 +119,13 @@
             position: absolute;
             right: 12px;
             color: #ff0000;
+        }
+        
+        .tab.navigating::after {
+            content: '●';
+            position: absolute;
+            right: 12px;
+            color: #00ff00;
         }
         
         .content-area {
@@ -154,12 +167,19 @@
             color: #ffffff;
             font-size: 12px;
             transition: all 0.2s;
+            cursor: pointer;
         }
         
         .option-item:hover {
             background-color: rgba(139, 0, 0, 0.3);
             border-left-color: #ff0000;
             transform: translateX(4px);
+        }
+        
+        .option-item.selected {
+            background-color: rgba(255, 0, 0, 0.3);
+            border-left-color: #ff0000;
+            font-weight: bold;
         }
         
         .footer {
@@ -300,8 +320,11 @@
 
     <script>
         let currentTab = 0;
+        let currentOption = 0;
+        let inOptionMode = false; // Track if we're navigating options or tabs
         const tabs = document.querySelectorAll('.tab');
         const tabContents = document.querySelectorAll('.tab-content');
+        const sidebar = document.querySelector('.sidebar');
 
         function switchTab(tabElement) {
             const tabName = tabElement.getAttribute('data-tab');
@@ -323,9 +346,55 @@
             console.log('Switched to: ' + tabName);
         }
 
+        function getActiveOptions() {
+            const activeContent = document.querySelector('.tab-content.active');
+            return activeContent ? activeContent.querySelectorAll('.option-item') : [];
+        }
+
+        function updateOptionSelection() {
+            const options = getActiveOptions();
+            options.forEach((opt, idx) => {
+                if (idx === currentOption) {
+                    opt.classList.add('selected');
+                    opt.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+                } else {
+                    opt.classList.remove('selected');
+                }
+            });
+        }
+
+        function enterOptionMode() {
+            inOptionMode = true;
+            currentOption = 0;
+            
+            // Dim sidebar and add indicator
+            sidebar.classList.add('dimmed');
+            tabs[currentTab].classList.add('navigating');
+            tabs[currentTab].classList.remove('active');
+            
+            updateOptionSelection();
+            console.log('Entered option mode - now navigating options');
+        }
+
+        function exitOptionMode() {
+            inOptionMode = false;
+            
+            // Restore sidebar
+            sidebar.classList.remove('dimmed');
+            tabs[currentTab].classList.remove('navigating');
+            tabs[currentTab].classList.add('active');
+            
+            // Clear option selection
+            const options = getActiveOptions();
+            options.forEach(opt => opt.classList.remove('selected'));
+            
+            console.log('Exited option mode - back to tab navigation');
+        }
+
         // Add click handlers to tabs
         tabs.forEach(tab => {
             tab.addEventListener('click', function() {
+                exitOptionMode();
                 switchTab(this);
             });
         });
@@ -336,18 +405,41 @@
 
         // Keyboard navigation
         window.addEventListener('keydown', function(event) {
-            if (event.key === 'ArrowDown') {
-                event.preventDefault();
-                currentTab = (currentTab + 1) % tabs.length;
-                switchTab(tabs[currentTab]);
-            } else if (event.key === 'ArrowUp') {
-                event.preventDefault();
-                currentTab = (currentTab - 1 + tabs.length) % tabs.length;
-                switchTab(tabs[currentTab]);
-            } else if (event.key === 'Enter') {
-                event.preventDefault();
-                // Enter key confirmation (can be used for selecting options)
-                console.log('Enter pressed on:', tabs[currentTab].textContent);
+            if (!inOptionMode) {
+                // Tab navigation mode
+                if (event.key === 'ArrowDown') {
+                    event.preventDefault();
+                    currentTab = (currentTab + 1) % tabs.length;
+                    switchTab(tabs[currentTab]);
+                } else if (event.key === 'ArrowUp') {
+                    event.preventDefault();
+                    currentTab = (currentTab - 1 + tabs.length) % tabs.length;
+                    switchTab(tabs[currentTab]);
+                } else if (event.key === 'Enter') {
+                    event.preventDefault();
+                    enterOptionMode();
+                }
+            } else {
+                // Option navigation mode
+                const options = getActiveOptions();
+                
+                if (event.key === 'ArrowDown') {
+                    event.preventDefault();
+                    currentOption = (currentOption + 1) % options.length;
+                    updateOptionSelection();
+                } else if (event.key === 'ArrowUp') {
+                    event.preventDefault();
+                    currentOption = (currentOption - 1 + options.length) % options.length;
+                    updateOptionSelection();
+                } else if (event.key === 'Enter') {
+                    event.preventDefault();
+                    // Select/activate the option
+                    console.log('Selected option:', options[currentOption].textContent);
+                    // Add your option activation logic here
+                } else if (event.key === 'Backspace') {
+                    event.preventDefault();
+                    exitOptionMode();
+                }
             }
         });
 
