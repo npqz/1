@@ -50,7 +50,18 @@
             letter-spacing: 2px; 
             position: relative; 
             text-align: left; /* Changed from center to left */
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8); 
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+            display: flex;
+            align-items: baseline;
+            gap: 8px;
+        }
+        
+        .header-subtitle {
+            font-size: 13px;
+            color: #999999;
+            text-transform: none;
+            letter-spacing: 0.5px;
+            font-weight: normal;
         } 
         
         .header::before { 
@@ -250,12 +261,66 @@
         ::-webkit-scrollbar-thumb:hover {
             background: #ff0000;
         }
+        
+        .notification {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: linear-gradient(135deg, rgba(20, 0, 0, 0.95), rgba(40, 0, 0, 0.95));
+            border: 2px solid #8B0000;
+            border-radius: 8px;
+            padding: 12px 20px;
+            color: white;
+            font-size: 13px;
+            font-weight: bold;
+            min-width: 250px;
+            backdrop-filter: blur(10px);
+            animation: slideIn 0.3s ease-out, slideOut 0.3s ease-in 2.7s;
+            z-index: 1000;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+        }
+        
+        @keyframes slideIn {
+            from {
+                transform: translateX(400px);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+        
+        @keyframes slideOut {
+            from {
+                transform: translateX(0);
+                opacity: 1;
+            }
+            to {
+                transform: translateX(400px);
+                opacity: 0;
+            }
+        }
+        
+        .notification-title {
+            color: #ff0000;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 4px;
+        }
+        
+        .notification-message {
+            color: #ffffff;
+            font-size: 13px;
+        }
     </style>
 </head>
 <body>
     <div class="menu">
         <div class="header">
-            Main Menu By Faisal 
+            <span>Main Menu</span>
+            <span class="header-subtitle">By Faisal</span>
         </div>
         
         <div class="main-content">
@@ -341,8 +406,7 @@
                 
                 <div class="tab-content" id="misc">
                     <div class="content-title">Misc Options</div>
-                    <div class="option-item">Time Control</div>
-                    <div class="option-item">Weather Control</div>
+                    <div class="option-item">FG/EC Bypass</div>
                 </div>
                 
                 <div class="tab-content" id="settings">
@@ -378,6 +442,34 @@
         let originalServerContent = '';
         let originalPlayerListContent = '';
         let currentPlayer = '';
+        
+        // Track toggle states for specific options
+        const toggleableOptions = [
+            'Noclip',
+            'God Mode',
+            'Infinite Stamina',
+            'Super Jump',
+            'Fast Run',
+            'No Ragdoll',
+            'Spectate Player',
+            'Spam Effects',
+            'Spam Cars',
+            'Spectate Vehicle',
+            'Infinite Ammo',
+            'No Reload',
+            'Rapid Fire',
+            'Explosive Bullets',
+            'Aimbot',
+            'Auto Heal',
+            'Damage Multiplier',
+            'Night Vision',
+            'Thermal Vision',
+            'ESP',
+            'No HUD',
+            'FG/EC Bypass'
+        ];
+        
+        const optionStates = {};
 
         function switchTab(tabElement) {
             const tabName = tabElement.getAttribute('data-tab');
@@ -489,6 +581,17 @@
                     const selectedOption = options[currentOption];
                     const optionText = selectedOption.textContent.trim();
                     console.log('Selected option:', optionText);
+                    
+                    // Check if this option is toggleable
+                    if (toggleableOptions.includes(optionText)) {
+                        // Toggle the state
+                        optionStates[optionText] = !optionStates[optionText];
+                        const isEnabled = optionStates[optionText];
+                        showNotification(optionText, isEnabled);
+                    } else {
+                        // Non-toggleable options are always "enabled"
+                        showNotification(optionText, true);
+                    }
                 } else if (event.key === 'Backspace') {
                     event.preventDefault();
                     exitOptionMode();
@@ -497,6 +600,29 @@
         });
 
         originalServerContent = document.getElementById('server').innerHTML;
+
+        function showNotification(optionName, isEnabled) {
+            const existingNotif = document.querySelector('.notification');
+            if (existingNotif) {
+                existingNotif.remove();
+            }
+            
+            const status = isEnabled ? 'Enabled' : 'Disabled';
+            const statusColor = isEnabled ? '#ff0000' : '#666666';
+            
+            const notification = document.createElement('div');
+            notification.className = 'notification';
+            notification.innerHTML = `
+                <div class="notification-title">Success</div>
+                <div class="notification-message">${optionName} Has Been <span style="color: ${statusColor}">${status}</span></div>
+            `;
+            
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.remove();
+            }, 3000);
+        }
 
         window.addEventListener('message', function(event) {
             console.log('Message from Lua:', event.data);
