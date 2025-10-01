@@ -10,7 +10,7 @@
             margin: 0;
             padding: 0;
             font-family: Arial, sans-serif;
-            background-color: #000000;
+            background-color: transparent;
             color: white;
             display: flex;
             justify-content: flex-end;
@@ -19,7 +19,7 @@
             width: 100vw;
         }
         .menu {
-            background-color: #000000;
+            background-color: transparent;
             border: 1px solid #8B0000;
             padding: 0;
             border-radius: 5px;
@@ -33,7 +33,7 @@
             max-height: 300px;
         }
         .header {
-            background-color: #1a0000;
+            background-color: rgba(26, 0, 0, 0.8);
             padding: 2px;
             border-radius: 5px 5px 0 0;
             font-size: 8px;
@@ -45,7 +45,7 @@
             display: flex;
             flex-wrap: wrap;
             justify-content: center;
-            background-color: #111111;
+            background-color: transparent;
             padding: 2px 0;
             border-bottom: 1px solid #8B0000;
         }
@@ -74,10 +74,10 @@
             align-items: center;
             font-size: 7px;
             color: #ffcccc;
-            background-color: #000000;
+            background-color: transparent;
         }
         .footer {
-            background-color: #1a0000;
+            background-color: rgba(26, 0, 0, 0.8);
             padding: 2px;
             border-radius: 0 0 5px 5px;
             font-size: 6px;
@@ -151,13 +151,8 @@
         }
 
         function closeMenu() {
-            fetch(`https://${GetParentResourceName()}/close`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json; charset=UTF-8',
-                },
-                body: JSON.stringify({})
-            });
+            console.log('Close button clicked - Use M to toggle');
+            // Since no NUI callback, rely on M key toggle
         }
 
         // Keyboard navigation
