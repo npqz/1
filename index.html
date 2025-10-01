@@ -1,4 +1,3 @@
-<!-- html/index.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -6,10 +5,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Macho Menu</title>
     <style>
-        body {
+        * {
             margin: 0;
             padding: 0;
-            font-family: Arial, sans-serif;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background-color: transparent;
             color: white;
             display: flex;
@@ -18,113 +21,277 @@
             height: 100vh;
             width: 100vw;
         }
+        
         .menu {
-            background-color: transparent;
-            border: 1px solid #8B0000;
-            padding: 0;
-            border-radius: 5px;
-            box-shadow: 0 2px 10px rgba(139, 0, 0, 0.5);
-            text-align: center;
-            min-width: 100px;
+            background: linear-gradient(135deg, rgba(20, 0, 0, 0.95), rgba(40, 0, 0, 0.95));
+            border: 2px solid #8B0000;
+            border-radius: 8px;
+            box-shadow: 0 8px 32px rgba(139, 0, 0, 0.6);
+            min-width: 500px;
+            max-width: 700px;
+            width: 600px;
             margin: 20px;
             display: flex;
             flex-direction: column;
-            height: 40vh;
-            max-height: 300px;
+            backdrop-filter: blur(10px);
         }
+        
         .header {
-            background-color: rgba(26, 0, 0, 0.8);
-            padding: 2px;
-            border-radius: 5px 5px 0 0;
-            font-size: 8px;
+            background: linear-gradient(to right, #8B0000, #ff0000);
+            padding: 12px;
+            border-radius: 6px 6px 0 0;
+            font-size: 16px;
+            font-weight: bold;
+            color: white;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            position: relative;
+        }
+        
+        .close-btn {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            background-color: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            padding: 4px 10px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: bold;
+            transition: all 0.2s;
+        }
+        
+        .close-btn:hover {
+            background-color: rgba(255, 255, 255, 0.3);
+            transform: scale(1.1);
+        }
+        
+        .main-content {
+            display: flex;
+            min-height: 400px;
+            max-height: 500px;
+        }
+        
+        .sidebar {
+            width: 180px;
+            background-color: rgba(0, 0, 0, 0.4);
+            border-right: 1px solid #8B0000;
+            padding: 8px 0;
+            overflow-y: auto;
+        }
+        
+        .tab {
+            background: transparent;
+            border: none;
+            color: #cccccc;
+            padding: 12px 16px;
+            width: 100%;
+            cursor: pointer;
+            font-size: 13px;
+            text-align: left;
+            transition: all 0.3s;
+            border-left: 3px solid transparent;
+            position: relative;
+        }
+        
+        .tab:hover {
+            background-color: rgba(139, 0, 0, 0.3);
+            color: #ffffff;
+        }
+        
+        .tab.active {
+            background-color: rgba(255, 0, 0, 0.2);
+            color: #ff0000;
+            border-left: 3px solid #ff0000;
+            font-weight: bold;
+        }
+        
+        .tab.active::after {
+            content: '▶';
+            position: absolute;
+            right: 12px;
+            color: #ff0000;
+        }
+        
+        .content-area {
+            flex: 1;
+            padding: 16px;
+            overflow-y: auto;
+            background-color: rgba(0, 0, 0, 0.2);
+        }
+        
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.3s;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .content-title {
+            font-size: 18px;
             font-weight: bold;
             color: #ff0000;
-            border-bottom: 1px solid #8B0000;
+            margin-bottom: 16px;
+            padding-bottom: 8px;
+            border-bottom: 2px solid #8B0000;
         }
-        .tabs {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            background-color: transparent;
-            padding: 2px 0;
-            border-bottom: 1px solid #8B0000;
-        }
-        .tab {
-            background: none;
-            border: none;
+        
+        .option-item {
+            background-color: rgba(0, 0, 0, 0.3);
+            padding: 10px;
+            margin-bottom: 8px;
+            border-radius: 4px;
+            border-left: 2px solid #8B0000;
             color: #ffffff;
-            padding: 1px 3px;
-            margin: 0.5px;
-            cursor: pointer;
-            border-radius: 1px;
-            font-size: 7px;
-            transition: all 0.3s;
-            white-space: nowrap;
+            font-size: 12px;
+            transition: all 0.2s;
         }
-        .tab:hover, .tab.active {
-            background-color: #ff0000;
-            color: #000000;
+        
+        .option-item:hover {
+            background-color: rgba(139, 0, 0, 0.3);
+            border-left-color: #ff0000;
+            transform: translateX(4px);
         }
-        .content {
-            flex: 1;
-            padding: 2px;
-            overflow-y: auto;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-size: 7px;
-            color: #ffcccc;
-            background-color: transparent;
-        }
+        
         .footer {
-            background-color: rgba(26, 0, 0, 0.8);
-            padding: 2px;
-            border-radius: 0 0 5px 5px;
-            font-size: 6px;
+            background-color: rgba(0, 0, 0, 0.6);
+            padding: 10px 16px;
+            border-radius: 0 0 6px 6px;
+            font-size: 10px;
             display: flex;
             justify-content: space-between;
             align-items: center;
             border-top: 1px solid #8B0000;
-            color: #ff0000;
+            color: #999999;
         }
+        
         .counter {
             color: #ff6666;
+            font-weight: bold;
         }
-        .close-btn {
-            position: absolute;
-            top: 1px;
-            right: 1px;
-            background-color: #ff0000;
-            color: white;
-            border: none;
-            border-radius: 1px;
-            padding: 1px 3px;
-            cursor: pointer;
-            font-size: 7px;
+        
+        /* Scrollbar styling */
+        ::-webkit-scrollbar {
+            width: 6px;
         }
-        .close-btn:hover {
-            background-color: #cc0000;
+        
+        ::-webkit-scrollbar-track {
+            background: rgba(0, 0, 0, 0.3);
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: #8B0000;
+            border-radius: 3px;
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: #ff0000;
         }
     </style>
 </head>
 <body>
-    <div class="menu" id="menu">
-        <button class="close-btn" onclick="closeMenu()">X</button>
-        <div class="header">Main menu</div>
-        <nav class="tabs">
-            <button class="tab active" onclick="switchTab(this, 'Player')">Player</button>
-            <button class="tab" onclick="switchTab(this, 'Server')">Server</button>
-            <button class="tab" onclick="switchTab(this, 'Weapon')">Weapon</button>
-            <button class="tab" onclick="switchTab(this, 'Combat')">Combat</button>
-            <button class="tab" onclick="switchTab(this, 'Vehicle')">Vehicle</button>
-            <button class="tab" onclick="switchTab(this, 'Visual')">Visual</button>
-            <button class="tab" onclick="switchTab(this, 'Misc')">Misc</button>
-            <button class="tab" onclick="switchTab(this, 'Settings')">Settings</button>
-            <button class="tab" onclick="switchTab(this, 'Search')">Search</button>
-        </nav>
-        <div class="content" id="content">
-            Player - Placeholder Content
+    <div class="menu">
+        <div class="header">
+            Main Menu
+            <button class="close-btn" onclick="closeMenu()">✕</button>
         </div>
+        
+        <div class="main-content">
+            <nav class="sidebar">
+                <button class="tab active" data-tab="player">Player</button>
+                <button class="tab" data-tab="server">Server</button>
+                <button class="tab" data-tab="weapon">Weapon</button>
+                <button class="tab" data-tab="combat">Combat</button>
+                <button class="tab" data-tab="vehicle">Vehicle</button>
+                <button class="tab" data-tab="visual">Visual</button>
+                <button class="tab" data-tab="misc">Misc</button>
+                <button class="tab" data-tab="settings">Settings</button>
+                <button class="tab" data-tab="search">Search</button>
+            </nav>
+            
+            <div class="content-area">
+                <div class="tab-content active" id="player">
+                    <div class="content-title">Player Options</div>
+                    <div class="option-item">God Mode</div>
+                    <div class="option-item">Infinite Stamina</div>
+                    <div class="option-item">Super Jump</div>
+                    <div class="option-item">Fast Run</div>
+                    <div class="option-item">No Ragdoll</div>
+                </div>
+                
+                <div class="tab-content" id="server">
+                    <div class="content-title">Server Options</div>
+                    <div class="option-item">Server Info</div>
+                    <div class="option-item">Player List</div>
+                    <div class="option-item">Spectate Player</div>
+                    <div class="option-item">Teleport to Player</div>
+                </div>
+                
+                <div class="tab-content" id="weapon">
+                    <div class="content-title">Weapon Options</div>
+                    <div class="option-item">Give All Weapons</div>
+                    <div class="option-item">Infinite Ammo</div>
+                    <div class="option-item">No Reload</div>
+                    <div class="option-item">Rapid Fire</div>
+                    <div class="option-item">Explosive Bullets</div>
+                </div>
+                
+                <div class="tab-content" id="combat">
+                    <div class="content-title">Combat Options</div>
+                    <div class="option-item">Aimbot</div>
+                    <div class="option-item">ESP</div>
+                    <div class="option-item">Auto Heal</div>
+                    <div class="option-item">Damage Multiplier</div>
+                </div>
+                
+                <div class="tab-content" id="vehicle">
+                    <div class="content-title">Vehicle Options</div>
+                    <div class="option-item">Spawn Vehicle</div>
+                    <div class="option-item">Repair Vehicle</div>
+                    <div class="option-item">Boost Speed</div>
+                    <div class="option-item">Rainbow Paint</div>
+                </div>
+                
+                <div class="tab-content" id="visual">
+                    <div class="content-title">Visual Options</div>
+                    <div class="option-item">Night Vision</div>
+                    <div class="option-item">Thermal Vision</div>
+                    <div class="option-item">Custom FOV</div>
+                    <div class="option-item">No HUD</div>
+                </div>
+                
+                <div class="tab-content" id="misc">
+                    <div class="content-title">Misc Options</div>
+                    <div class="option-item">Teleport Waypoint</div>
+                    <div class="option-item">Time Control</div>
+                    <div class="option-item">Weather Control</div>
+                    <div class="option-item">Noclip</div>
+                </div>
+                
+                <div class="tab-content" id="settings">
+                    <div class="content-title">Settings</div>
+                    <div class="option-item">Menu Theme</div>
+                    <div class="option-item">Keybinds</div>
+                    <div class="option-item">Save Config</div>
+                    <div class="option-item">Load Config</div>
+                </div>
+                
+                <div class="tab-content" id="search">
+                    <div class="content-title">Search</div>
+                    <div class="option-item">Search for features...</div>
+                </div>
+            </div>
+        </div>
+        
         <div class="footer">
             <span>discord.gg/zx7 | Beta 1</span>
             <span class="counter" id="counter">1/9</span>
@@ -134,51 +301,59 @@
     <script>
         let currentTab = 0;
         const tabs = document.querySelectorAll('.tab');
+        const tabContents = document.querySelectorAll('.tab-content');
 
-        function switchTab(element, tabName) {
-            // Remove active class from all tabs
+        function switchTab(tabElement) {
+            const tabName = tabElement.getAttribute('data-tab');
+            
+            // Remove active class from all tabs and contents
             tabs.forEach(tab => tab.classList.remove('active'));
+            tabContents.forEach(content => content.classList.remove('active'));
+            
             // Add active to clicked tab
-            element.classList.add('active');
-            // Update content
-            document.getElementById('content').innerHTML = tabName + ' - Placeholder Content';
+            tabElement.classList.add('active');
+            
+            // Show corresponding content
+            document.getElementById(tabName).classList.add('active');
+            
             // Update counter
-            currentTab = Array.from(tabs).indexOf(element);
+            currentTab = Array.from(tabs).indexOf(tabElement);
             document.getElementById('counter').innerHTML = (currentTab + 1) + '/9';
-            // Placeholder alert
+            
             console.log('Switched to: ' + tabName);
-            // alert(tabName + ' - This is a placeholder!');
         }
+
+        // Add click handlers to tabs
+        tabs.forEach(tab => {
+            tab.addEventListener('click', function() {
+                switchTab(this);
+            });
+        });
 
         function closeMenu() {
             console.log('Close button clicked - Use M to toggle');
-            // Since no NUI callback, rely on M key toggle
         }
 
         // Keyboard navigation
         window.addEventListener('keydown', function(event) {
-            if (event.key === 'ArrowDown' || event.key === 'ArrowUp' || event.key === 'Enter') {
-                event.preventDefault(); // Prevent default browser behavior
-            }
-
             if (event.key === 'ArrowDown') {
+                event.preventDefault();
                 currentTab = (currentTab + 1) % tabs.length;
-                const nextTab = tabs[currentTab];
-                switchTab(nextTab, nextTab.textContent);
+                switchTab(tabs[currentTab]);
             } else if (event.key === 'ArrowUp') {
+                event.preventDefault();
                 currentTab = (currentTab - 1 + tabs.length) % tabs.length;
-                const prevTab = tabs[currentTab];
-                switchTab(prevTab, prevTab.textContent);
+                switchTab(tabs[currentTab]);
             } else if (event.key === 'Enter') {
-                const selectedTab = tabs[currentTab];
-                switchTab(selectedTab, selectedTab.textContent);
+                event.preventDefault();
+                // Enter key confirmation (can be used for selecting options)
+                console.log('Enter pressed on:', tabs[currentTab].textContent);
             }
         });
 
-        // Listen for messages from Lua (e.g., for dynamic updates)
+        // Listen for messages from Lua
         window.addEventListener('message', function(event) {
             console.log('Message from Lua:', event.data);
-            // Handle incoming data, e.g., update menu state
         });
     </script>
 </body>
