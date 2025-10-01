@@ -243,6 +243,7 @@
             <nav class="sidebar">
                 <button class="tab active" data-tab="player">Player</button>
                 <button class="tab" data-tab="server">Server</button>
+                <button class="tab" data-tab="Online Vehicles">Online Vehicles</button>
                 <button class="tab" data-tab="weapon">Weapon</button>
                 <button class="tab" data-tab="combat">Combat</button>
                 <button class="tab" data-tab="vehicle">Vehicle</button>
@@ -264,17 +265,17 @@
                     <div class="option-item">No Ragdoll</div>
                 </div>
                 
-            <div class="tab-content" id="Online Players">
+                <div class="tab-content" id="server">
                     <div class="content-title">Online Players (Troll Options)</div>
                     <div class="option-item">Spectate Player</div>
                     <div class="option-item">Teleport to Player</div>
                     <div class="option-item">Fall Player</div> <!-- Client-side: Apply ragdoll force locally on target ped -->
                     <div class="option-item">Explode Nearby</div> <!-- Client-side explosion effects only in your view -->
                     <div class="option-item">Spam Effects</div> <!-- Client-side screen glitch around player -->
-                    <div class="option-item">Spam Cars</div> 
+                    <div class="option-item">Spam Cars</div>
                 </div>
-
-           <div class="tab-content" id="Online Vehicles">
+                
+                <div class="tab-content" id="Online Vehicles">
                     <div class="content-title">Online Vehicles (Troll Options)</div>
                     <div class="option-item">Spectate Vehicle</div>
                     <div class="option-item">Teleport to Vehicle</div>
@@ -284,6 +285,14 @@
                    <div class="option-item">Kick From Vehicle</div>
                     <div class="option-item">Launch Vehicle</div> 
                 </div>
+                
+                <div class="tab-content" id="combat">
+                    <div class="content-title">Combat Options</div>
+                    <div class="option-item">Aimbot</div>
+                    <div class="option-item">Auto Heal</div>
+                    <div class="option-item">Damage Multiplier</div>
+                </div>
+                
                 <div class="tab-content" id="weapon">
                     <div class="content-title">Weapon Options</div>
                     <div class="option-item">Give All Weapons</div>
@@ -293,7 +302,6 @@
                     <div class="option-item">Explosive Bullets</div>
                 </div>
 
-                
                 <div class="tab-content" id="vehicle">
                     <div class="content-title">Vehicle Options</div>
                     <div class="option-item">Spawn Vehicle</div>
