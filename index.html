@@ -5,54 +5,72 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Macho Menu</title>
     <style>
-     * {
-    box-shadow: none !important;
-    text-shadow: none !important;
-    filter: none !important;
-}
-
+        * {
+            box-shadow: none !important;
+            text-shadow: none !important;
+            filter: none !important;
+        }
         
- html, body {
+        html, body {
             margin: 0;
             padding: 0;
             width: 100%;
             height: 100%;
-            background: none;  /* true transparency */
-            overflow: none; /* prevent scrollbars */
+            background: none;
+            overflow: hidden;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             color: white;
             display: flex;
             justify-content: flex-end;
             align-items: flex-start;
         }
-
-
-
         
         .menu {
             background: linear-gradient(135deg, rgba(20, 0, 0, 0.95), rgba(40, 0, 0, 0.95));
             border: 2px solid #8B0000;
             border-radius: 8px;
-            box-shadow: 0 8px 32px rgba(139, 0, 0, 0.6);
             min-width: 300px;
             max-width: 500px;
             width: 450px;
             margin: 10px;
+            margin-top: 80px; /* Shifted down to make room */
             display: flex;
             flex-direction: column;
             backdrop-filter: blur(10px);
         }
         
-        .header {
-            background: linear-gradient(to right, #8B0000, #ff0000);
-            padding: 12px;
-            border-radius: 6px 6px 0 0;
-            font-size: 16px;
-            font-weight: bold;
-            color: white;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            position: relative;
+        .header { 
+            background: linear-gradient(to right, #8B0000, #ff0000); 
+            padding: 180px 12px 12px 20px; /* Added left padding */
+            border-radius: 6px 6px 0 0; 
+            font-size: 16px; 
+            font-weight: bold; 
+            color: white; 
+            text-transform: uppercase; 
+            letter-spacing: 2px; 
+            position: relative; 
+            text-align: left; /* Changed from center to left */
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8); 
+        } 
+        
+        .header::before { 
+            content: ''; 
+            position: absolute; 
+            top: 0; 
+            left: 0; 
+            right: 0; 
+            bottom: 30px;
+            background-image: url('https://i.postimg.cc/YCBK2fps/image.png'); 
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center top;
+            border-radius: 6px 6px 0 0; 
+            z-index: 0; 
+        } 
+        
+        .header > * { 
+            position: relative; 
+            z-index: 1; 
         }
         
         .close-btn {
@@ -68,6 +86,7 @@
             font-size: 12px;
             font-weight: bold;
             transition: all 0.2s;
+            z-index: 2;
         }
         
         .close-btn:hover {
@@ -215,7 +234,6 @@
             font-weight: bold;
         }
         
-        /* Scrollbar styling */
         ::-webkit-scrollbar {
             width: 6px;
         }
@@ -271,9 +289,9 @@
                     <div class="content-title">Online Players (Troll Options)</div>
                     <div class="option-item">Spectate Player</div>
                     <div class="option-item">Teleport to Player</div>
-                    <div class="option-item">Fall Player</div> <!-- Client-side: Apply ragdoll force locally on target ped -->
-                    <div class="option-item">Explode Nearby</div> <!-- Client-side explosion effects only in your view -->
-                    <div class="option-item">Spam Effects</div> <!-- Client-side screen glitch around player -->
+                    <div class="option-item">Fall Player</div>
+                    <div class="option-item">Explode Nearby</div>
+                    <div class="option-item">Spam Effects</div>
                     <div class="option-item">Spam Cars</div>
                 </div>
                 
@@ -281,11 +299,11 @@
                     <div class="content-title">Online Vehicles (Troll Options)</div>
                     <div class="option-item">Spectate Vehicle</div>
                     <div class="option-item">Teleport to Vehicle</div>
-                    <div class="option-item">Boost Vehicle</div> 
-                    <div class="option-item">Break Engine</div> 
-                    <div class="option-item">Break All Wheels</div> 
-                   <div class="option-item">Kick From Vehicle</div>
-                    <div class="option-item">Launch Vehicle</div> 
+                    <div class="option-item">Boost Vehicle</div>
+                    <div class="option-item">Break Engine</div>
+                    <div class="option-item">Break All Wheels</div>
+                    <div class="option-item">Kick From Vehicle</div>
+                    <div class="option-item">Launch Vehicle</div>
                 </div>
                 
                 <div class="tab-content" id="combat">
@@ -345,20 +363,19 @@
         
         <div class="footer">
             <span>discord.gg/zx7 | Beta 1</span>
-            <span class="counter" id="counter">1/9</span>
+            <span class="counter" id="counter">1/10</span>
         </div>
     </div>
 
     <script>
         let currentTab = 0;
         let currentOption = 0;
-        let inOptionMode = false; // Track if we're navigating options or tabs
+        let inOptionMode = false;
         const tabs = document.querySelectorAll('.tab');
         const tabContents = document.querySelectorAll('.tab-content');
         const sidebar = document.querySelector('.sidebar');
 
-        // Sub-menu state
-        let menuState = 'main'; // 'main', 'playerlist', 'playeraction'
+        let menuState = 'main';
         let originalServerContent = '';
         let originalPlayerListContent = '';
         let currentPlayer = '';
@@ -366,21 +383,15 @@
         function switchTab(tabElement) {
             const tabName = tabElement.getAttribute('data-tab');
             
-            // Remove active class from all tabs and contents
             tabs.forEach(tab => tab.classList.remove('active'));
             tabContents.forEach(content => content.classList.remove('active'));
             
-            // Add active to clicked tab
             tabElement.classList.add('active');
-            
-            // Show corresponding content
             document.getElementById(tabName).classList.add('active');
             
-            // Update counter
             currentTab = Array.from(tabs).indexOf(tabElement);
-            document.getElementById('counter').innerHTML = (currentTab + 1) + '/9';
+            document.getElementById('counter').innerHTML = (currentTab + 1) + '/10';
             
-            // Reset sub-menu if switching tabs
             if (menuState !== 'main') {
                 resetToMain();
             }
@@ -417,7 +428,6 @@
             inOptionMode = true;
             currentOption = 0;
             
-            // Dim sidebar and add indicator
             sidebar.classList.add('dimmed');
             tabs[currentTab].classList.add('navigating');
             tabs[currentTab].classList.remove('active');
@@ -429,19 +439,16 @@
         function exitOptionMode() {
             inOptionMode = false;
             
-            // Restore sidebar
             sidebar.classList.remove('dimmed');
             tabs[currentTab].classList.remove('navigating');
             tabs[currentTab].classList.add('active');
             
-            // Clear option selection
             const options = getActiveOptions();
             options.forEach(opt => opt.classList.remove('selected'));
             
             console.log('Exited option mode - back to tab navigation');
         }
 
-        // Add click handlers to tabs
         tabs.forEach(tab => {
             tab.addEventListener('click', function() {
                 exitOptionMode();
@@ -453,10 +460,8 @@
             console.log('Close button clicked - Use M to toggle');
         }
 
-        // Keyboard navigation
         window.addEventListener('keydown', function(event) {
             if (!inOptionMode) {
-                // Tab navigation mode
                 if (event.key === 'ArrowDown') {
                     event.preventDefault();
                     currentTab = (currentTab + 1) % tabs.length;
@@ -470,7 +475,6 @@
                     enterOptionMode();
                 }
             } else {
-                // Option navigation mode
                 const options = getActiveOptions();
                 
                 if (event.key === 'ArrowDown') {
@@ -485,92 +489,16 @@
                     event.preventDefault();
                     const selectedOption = options[currentOption];
                     const optionText = selectedOption.textContent.trim();
-                    const tabName = tabs[currentTab].getAttribute('data-tab');
-                    const activeContent = document.querySelector('.tab-content.active');
-
-                    if (menuState === 'main') {
-                        if (tabName === 'server' && optionText === 'Player List') {
-                            menuState = 'playerlist';
-                            const playerListHTML = `
-                                <div class="content-title">Player List</div>
-                                <div class="option-item">Player1</div>
-                                <div class="option-item">Player2</div>
-                                <div class="option-item">Player3</div>
-                                <div class="option-item back-option">Back</div>
-                            `;
-                            originalPlayerListContent = playerListHTML;
-                            activeContent.innerHTML = playerListHTML;
-                            currentOption = 0;
-                            updateOptionSelection();
-                            return;
-                        } else {
-                            console.log('Selected option:', optionText);
-                            return;
-                        }
-                    } else if (menuState === 'playerlist') {
-                        if (optionText === 'Back') {
-                            menuState = 'main';
-                            activeContent.innerHTML = originalServerContent;
-                            currentOption = 1; // Player List index
-                            updateOptionSelection();
-                            return;
-                        } else {
-                            // Select player
-                            currentPlayer = optionText;
-                            menuState = 'playeraction';
-                            const playerActionHTML = `
-                                <div class="content-title">Actions for ${currentPlayer}</div>
-                                <div class="option-item">Teleport To</div>
-                                <div class="option-item">Spectate</div>
-                                <div class="option-item">Kick</div>
-                                <div class="option-item">Freeze</div>
-                                <div class="option-item">Ban</div>
-                                <div class="option-item back-option">Back to List</div>
-                            `;
-                            activeContent.innerHTML = playerActionHTML;
-                            currentOption = 0;
-                            updateOptionSelection();
-                            return;
-                        }
-                    } else if (menuState === 'playeraction') {
-                        if (optionText === 'Back to List') {
-                            menuState = 'playerlist';
-                            activeContent.innerHTML = originalPlayerListContent;
-                            // Reset to top of list
-                            currentOption = 0;
-                            updateOptionSelection();
-                            return;
-                        } else {
-                            console.log(`Performing action: ${optionText} on ${currentPlayer}`);
-                            // Here: send message to Lua, e.g., window.postMessage({action: optionText, target: currentPlayer}, '*');
-                            return;
-                        }
-                    }
+                    console.log('Selected option:', optionText);
                 } else if (event.key === 'Backspace') {
                     event.preventDefault();
-                    if (menuState !== 'main') {
-                        const activeContent = document.querySelector('.tab-content.active');
-                        if (menuState === 'playeraction') {
-                            menuState = 'playerlist';
-                            activeContent.innerHTML = originalPlayerListContent;
-                            currentOption = 0;
-                        } else if (menuState === 'playerlist') {
-                            menuState = 'main';
-                            activeContent.innerHTML = originalServerContent;
-                            currentOption = 1; // Back to Player List
-                        }
-                        updateOptionSelection();
-                    } else {
-                        exitOptionMode();
-                    }
+                    exitOptionMode();
                 }
             }
         });
 
-        // Initialize original content after DOM load
         originalServerContent = document.getElementById('server').innerHTML;
 
-        // Listen for messages from Lua
         window.addEventListener('message', function(event) {
             console.log('Message from Lua:', event.data);
         });
