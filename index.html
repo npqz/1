@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ZX7 Menu</title>
+    <title>Macho Menu</title>
     <style>
         * {
             box-shadow: none !important;
@@ -33,7 +33,7 @@
             max-width: 500px;
             width: 450px;
             margin: 10px;
-            margin-top: 80px; /* Shifted down to make room */
+            margin-top: 80px;
             display: flex;
             flex-direction: column;
             backdrop-filter: blur(10px);
@@ -41,7 +41,7 @@
         
         .header { 
             background: linear-gradient(to right, #8B0000, #ff0000); 
-            padding: 180px 12px 12px 20px; /* Added left padding */
+            padding: 180px 12px 12px 20px;
             border-radius: 6px 6px 0 0; 
             font-size: 16px; 
             font-weight: bold; 
@@ -49,7 +49,7 @@
             text-transform: uppercase; 
             letter-spacing: 2px; 
             position: relative; 
-            text-align: left; /* Changed from center to left */
+            text-align: left;
             text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
             display: flex;
             align-items: baseline;
@@ -314,6 +314,42 @@
             color: #ffffff;
             font-size: 13px;
         }
+        
+        .search-input {
+            width: calc(100% - 20px);
+            background-color: rgba(0, 0, 0, 0.4);
+            border: 2px solid #8B0000;
+            border-radius: 4px;
+            padding: 10px;
+            color: white;
+            font-size: 13px;
+            margin-bottom: 16px;
+            outline: none;
+            transition: all 0.3s;
+        }
+        
+        .search-input:focus {
+            border-color: #ff0000;
+            background-color: rgba(0, 0, 0, 0.6);
+        }
+        
+        .search-input::placeholder {
+            color: #666666;
+        }
+        
+        #searchResults {
+            margin-top: 8px;
+        }
+        
+        .search-category {
+            color: #ff6666;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-top: 12px;
+            margin-bottom: 4px;
+            font-weight: bold;
+        }
     </style>
 </head>
 <body>
@@ -410,7 +446,8 @@
                 
                 <div class="tab-content" id="search">
                     <div class="content-title">Search</div>
-                    <div class="option-item">Search for features...</div>
+                    <input type="text" id="searchInput" class="search-input option-item" placeholder="Type to search features...">
+                    <div id="searchResults"></div>
                 </div>
             </div>
         </div>
@@ -433,6 +470,7 @@
         let originalServerContent = '';
         let originalPlayerListContent = '';
         let currentPlayer = '';
+        let allFeatures = [];
         
         // Track toggle states for specific options
         const toggleableOptions = [
@@ -461,6 +499,68 @@
         ];
         
         const optionStates = {};
+        
+        // Build the features database on load
+        function buildFeaturesDatabase() {
+            allFeatures = [];
+            const tabs = ['player', 'server', 'Online Vehicles', 'weapon', 'combat', 'vehicle', 'visual', 'misc'];
+            
+            tabs.forEach(tabId => {
+                const tabElement = document.getElementById(tabId);
+                if (tabElement) {
+                    const categoryName = tabElement.querySelector('.content-title').textContent;
+                    const options = tabElement.querySelectorAll('.option-item');
+                    options.forEach(opt => {
+                        const optionText = opt.textContent.trim();
+                        allFeatures.push({
+                            name: optionText,
+                            category: categoryName,
+                            tabId: tabId
+                        });
+                    });
+                }
+            });
+        }
+        
+        // Search functionality
+        function performSearch(query) {
+            const searchResults = document.getElementById('searchResults');
+            
+            if (!query || query.trim() === '') {
+                searchResults.innerHTML = '';
+                return;
+            }
+            
+            const lowerQuery = query.toLowerCase();
+            const results = allFeatures.filter(feature => 
+                feature.name.toLowerCase().includes(lowerQuery)
+            );
+            
+            if (results.length === 0) {
+                searchResults.innerHTML = '<div class="option-item" style="cursor: default; opacity: 0.6;">No results found</div>';
+                return;
+            }
+            
+            // Group results by category
+            const groupedResults = {};
+            results.forEach(result => {
+                if (!groupedResults[result.category]) {
+                    groupedResults[result.category] = [];
+                }
+                groupedResults[result.category].push(result);
+            });
+            
+            // Build the results HTML
+            let html = '';
+            Object.keys(groupedResults).forEach(category => {
+                html += `<div class="search-category">${category}</div>`;
+                groupedResults[category].forEach(feature => {
+                    html += `<div class="option-item" data-feature-name="${feature.name}">${feature.name}</div>`;
+                });
+            });
+            
+            searchResults.innerHTML = html;
+        }
 
         function switchTab(tabElement) {
             const tabName = tabElement.getAttribute('data-tab');
@@ -491,15 +591,32 @@
 
         function getActiveOptions() {
             const activeContent = document.querySelector('.tab-content.active');
-            return activeContent ? activeContent.querySelectorAll('.option-item') : [];
+            if (!activeContent) return [];
+            
+            // For search tab, include the search input as the first "option"
+            if (activeContent.id === 'search') {
+                const searchInput = document.getElementById('searchInput');
+                const searchResults = activeContent.querySelectorAll('#searchResults .option-item');
+                return [searchInput, ...searchResults];
+            }
+            
+            return activeContent.querySelectorAll('.option-item');
         }
 
         function updateOptionSelection() {
             const options = getActiveOptions();
+            const searchInput = document.getElementById('searchInput');
+            
             options.forEach((opt, idx) => {
                 if (idx === currentOption) {
-                    opt.classList.add('selected');
-                    opt.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+                    // Special handling for search input
+                    if (opt === searchInput) {
+                        opt.classList.add('selected');
+                        opt.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+                    } else {
+                        opt.classList.add('selected');
+                        opt.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+                    }
                 } else {
                     opt.classList.remove('selected');
                 }
@@ -569,7 +686,65 @@
                     updateOptionSelection();
                 } else if (event.key === 'Enter') {
                     event.preventDefault();
+                    
                     const selectedOption = options[currentOption];
+                    const searchInput = document.getElementById('searchInput');
+                    
+                    // Special handling for search tab
+                    const activeTabName = document.querySelector('.tab.active, .tab.navigating').getAttribute('data-tab');
+                    
+                    // If the selected option IS the search input
+                    if (selectedOption === searchInput) {
+                        if (document.activeElement === searchInput) {
+                            // Already focused, blur it
+                            searchInput.blur();
+                            console.log('Search input blurred - exiting typing mode');
+                        } else {
+                            // Focus it
+                            searchInput.focus();
+                            console.log('Search input focused');
+                        }
+                        return;
+                    }
+                    
+                    // If focused on search input but not selected as option, blur it
+                    if (document.activeElement === searchInput && selectedOption !== searchInput) {
+                        searchInput.blur();
+                        console.log('Search input blurred - exiting typing mode');
+                        return;
+                    }
+                    
+                    // If on search tab and search input exists but not focused
+                    if (activeTabName === 'search' && searchInput && document.activeElement !== searchInput) {
+                        // Check if we're in option mode with search results
+                        const searchResults = document.querySelectorAll('#searchResults .option-item');
+                        
+                        // If there are search results and we have a selected option
+                        if (searchResults.length > 0 && selectedOption) {
+                            // Check if the selected option is in search results
+                            if (selectedOption.closest('#searchResults')) {
+                                const featureName = selectedOption.getAttribute('data-feature-name');
+                                console.log('Selected search result:', featureName);
+                                
+                                // Check if this option is toggleable
+                                if (toggleableOptions.includes(featureName)) {
+                                    optionStates[featureName] = !optionStates[featureName];
+                                    const isEnabled = optionStates[featureName];
+                                    showNotification(featureName, isEnabled);
+                                } else {
+                                    showNotification(featureName, true);
+                                }
+                                return;
+                            }
+                        }
+                        
+                        // Otherwise, focus the search input
+                        searchInput.focus();
+                        return;
+                    }
+                    
+                    if (!selectedOption) return;
+                    
                     const optionText = selectedOption.textContent.trim();
                     console.log('Selected option:', optionText);
                     
@@ -617,6 +792,32 @@
 
         window.addEventListener('message', function(event) {
             console.log('Message from Lua:', event.data);
+        });
+        
+        // Initialize features database
+        buildFeaturesDatabase();
+        
+        // Search input event listener
+        const searchInput = document.getElementById('searchInput');
+        searchInput.addEventListener('input', function(e) {
+            performSearch(e.target.value);
+        });
+        
+        // Handle clicking on search results
+        document.addEventListener('click', function(e) {
+            if (e.target.classList.contains('option-item')) {
+                // Get feature name from data attribute or text content
+                const featureName = e.target.getAttribute('data-feature-name') || e.target.textContent.trim();
+                
+                // Check if this option is toggleable
+                if (toggleableOptions.includes(featureName)) {
+                    optionStates[featureName] = !optionStates[featureName];
+                    const isEnabled = optionStates[featureName];
+                    showNotification(featureName, isEnabled);
+                } else {
+                    showNotification(featureName, true);
+                }
+            }
         });
     </script>
 </body>
