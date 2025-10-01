@@ -151,8 +151,13 @@
         }
 
         function closeMenu() {
-            // Post message to Lua to hide menu
-            window.postMessage({action: 'close'}, '*');
+            fetch(`https://${GetParentResourceName()}/close`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json; charset=UTF-8',
+                },
+                body: JSON.stringify({})
+            });
         }
 
         // Keyboard navigation
