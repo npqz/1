@@ -566,6 +566,9 @@
         
         const optionStates = {};
         
+        // Initialize storage for Lua to read
+        window.lastOptionSelected = null;
+        
         // Build the features database on load
         function buildFeaturesDatabase() {
             allFeatures = [];
@@ -805,7 +808,6 @@
                         return;
                     }
                     
-                    // If on search tab and search input exists but not focused
                     if (activeTabName === 'search' && searchInput && document.activeElement !== searchInput) {
                         // Check if we're in option mode with search results
                         const searchResults = document.querySelectorAll('#searchResults .option-item');
