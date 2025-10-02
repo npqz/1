@@ -524,427 +524,440 @@
         <div class="description-text" id="descriptionText">Description will appear here...</div>
     </div>
 
-    <script>
-        let currentTab = 0;
-        let currentOption = 0;
-        let inOptionMode = false;
-        const tabs = document.querySelectorAll('.tab');
-        const tabContents = document.querySelectorAll('.tab-content');
-        const sidebar = document.querySelector('.sidebar');
+<script>
+    let currentTab = 0;
+    let currentOption = 0;
+    let inOptionMode = false;
+    const tabs = document.querySelectorAll('.tab');
+    const tabContents = document.querySelectorAll('.tab-content');
+    const sidebar = document.querySelector('.sidebar');
 
-        let menuState = 'main';
-        let originalServerContent = '';
-        let originalPlayerListContent = '';
-        let currentPlayer = '';
-        let allFeatures = [];
+    let menuState = 'main';
+    let originalServerContent = '';
+    let originalPlayerListContent = '';
+    let currentPlayer = '';
+    let allFeatures = [];
+    
+    // Track toggle states for specific options
+    const toggleableOptions = [
+        'Noclip',
+        'God Mode',
+        'Infinite Stamina',
+        'Super Jump',
+        'Fast Run',
+        'No Ragdoll',
+        'Spectate Player',
+        'Spam Effects',
+        'Spam Cars',
+        'Spectate Vehicle',
+        'Infinite Ammo',
+        'No Reload',
+        'Rapid Fire',
+        'Explosive Bullets',
+        'Aimbot',
+        'Auto Heal',
+        'Damage Multiplier',
+        'Night Vision',
+        'Thermal Vision',
+        'ESP',
+        'No HUD',
+        'FG/EC Bypass'
+    ];
+    
+    const optionStates = {};
+    
+    // Build the features database on load
+    function buildFeaturesDatabase() {
+        allFeatures = [];
+        const tabs = ['player', 'server', 'Online Vehicles', 'weapon', 'combat', 'vehicle', 'visual', 'misc'];
         
-        // Track toggle states for specific options
-        const toggleableOptions = [
-            'Noclip',
-            'God Mode',
-            'Infinite Stamina',
-            'Super Jump',
-            'Fast Run',
-            'No Ragdoll',
-            'Spectate Player',
-            'Spam Effects',
-            'Spam Cars',
-            'Spectate Vehicle',
-            'Infinite Ammo',
-            'No Reload',
-            'Rapid Fire',
-            'Explosive Bullets',
-            'Aimbot',
-            'Auto Heal',
-            'Damage Multiplier',
-            'Night Vision',
-            'Thermal Vision',
-            'ESP',
-            'No HUD',
-            'FG/EC Bypass'
-        ];
-        
-        const optionStates = {};
-        
-        // Initialize storage for Lua to read
-        window.lastOptionSelected = null;
-        
-        // Build the features database on load
-        function buildFeaturesDatabase() {
-            allFeatures = [];
-            const tabs = ['player', 'server', 'Online Vehicles', 'weapon', 'combat', 'vehicle', 'visual', 'misc'];
-            
-            tabs.forEach(tabId => {
-                const tabElement = document.getElementById(tabId);
-                if (tabElement) {
-                    const categoryName = tabElement.querySelector('.content-title').textContent;
-                    const options = tabElement.querySelectorAll('.option-item');
-                    options.forEach(opt => {
-                        const optionText = opt.textContent.trim();
-                        const description = opt.getAttribute('data-description') || 'No description available';
-                        allFeatures.push({
-                            name: optionText,
-                            category: categoryName,
-                            tabId: tabId,
-                            description: description
-                        });
+        tabs.forEach(tabId => {
+            const tabElement = document.getElementById(tabId);
+            if (tabElement) {
+                const categoryName = tabElement.querySelector('.content-title').textContent;
+                const options = tabElement.querySelectorAll('.option-item');
+                options.forEach(opt => {
+                    const optionText = opt.textContent.trim();
+                    const description = opt.getAttribute('data-description') || 'No description available';
+                    allFeatures.push({
+                        name: optionText,
+                        category: categoryName,
+                        tabId: tabId,
+                        description: description
                     });
-                }
-            });
-        }
-        
-        // Show description panel
-        function showDescription(optionElement) {
-            const descriptionPanel = document.getElementById('descriptionPanel');
-            const descriptionTitle = document.getElementById('descriptionTitle');
-            const descriptionText = document.getElementById('descriptionText');
-            
-            const title = optionElement.textContent.trim();
-            const description = optionElement.getAttribute('data-description') || 'No description available';
-            
-            descriptionTitle.textContent = title;
-            descriptionText.textContent = description;
-            
-            descriptionPanel.classList.add('show');
-        }
-        
-        // Hide description panel
-        function hideDescription() {
-            const descriptionPanel = document.getElementById('descriptionPanel');
-            descriptionPanel.classList.remove('show');
-        }
-        
-        // Search functionality
-        function performSearch(query) {
-            const searchResults = document.getElementById('searchResults');
-            
-            if (!query || query.trim() === '') {
-                searchResults.innerHTML = '';
-                return;
-            }
-            
-            const lowerQuery = query.toLowerCase();
-            const results = allFeatures.filter(feature => 
-                feature.name.toLowerCase().includes(lowerQuery)
-            );
-            
-            if (results.length === 0) {
-                searchResults.innerHTML = '<div class="option-item" style="cursor: default; opacity: 0.6;">No results found</div>';
-                return;
-            }
-            
-            // Group results by category
-            const groupedResults = {};
-            results.forEach(result => {
-                if (!groupedResults[result.category]) {
-                    groupedResults[result.category] = [];
-                }
-                groupedResults[result.category].push(result);
-            });
-            
-            // Build the results HTML
-            let html = '';
-            Object.keys(groupedResults).forEach(category => {
-                html += `<div class="search-category">${category}</div>`;
-                groupedResults[category].forEach(feature => {
-                    html += `<div class="option-item" data-feature-name="${feature.name}" data-description="${feature.description}">${feature.name}</div>`;
                 });
-            });
-            
-            searchResults.innerHTML = html;
-        }
-
-        function switchTab(tabElement) {
-            const tabName = tabElement.getAttribute('data-tab');
-            
-            tabs.forEach(tab => tab.classList.remove('active'));
-            tabContents.forEach(content => content.classList.remove('active'));
-            
-            tabElement.classList.add('active');
-            document.getElementById(tabName).classList.add('active');
-            
-            currentTab = Array.from(tabs).indexOf(tabElement);
-            document.getElementById('counter').innerHTML = (currentTab + 1) + '/10';
-            
-            if (menuState !== 'main') {
-                resetToMain();
             }
-            
-            console.log('Switched to: ' + tabName);
+        });
+    }
+    
+    // Show description panel
+    function showDescription(optionElement) {
+        const descriptionPanel = document.getElementById('descriptionPanel');
+        const descriptionTitle = document.getElementById('descriptionTitle');
+        const descriptionText = document.getElementById('descriptionText');
+        
+        const title = optionElement.textContent.trim();
+        const description = optionElement.getAttribute('data-description') || 'No description available';
+        
+        descriptionTitle.textContent = title;
+        descriptionText.textContent = description;
+        
+        descriptionPanel.classList.add('show');
+    }
+    
+    // Hide description panel
+    function hideDescription() {
+        const descriptionPanel = document.getElementById('descriptionPanel');
+        descriptionPanel.classList.remove('show');
+    }
+    
+    // Search functionality
+    function performSearch(query) {
+        const searchResults = document.getElementById('searchResults');
+        
+        if (!query || query.trim() === '') {
+            searchResults.innerHTML = '';
+            return;
         }
-
-        function resetToMain() {
-            menuState = 'main';
-            const serverContent = document.getElementById('server');
-            if (serverContent) {
-                serverContent.innerHTML = originalServerContent;
+        
+        const lowerQuery = query.toLowerCase();
+        const results = allFeatures.filter(feature => 
+            feature.name.toLowerCase().includes(lowerQuery)
+        );
+        
+        if (results.length === 0) {
+            searchResults.innerHTML = '<div class="option-item" style="cursor: default; opacity: 0.6;">No results found</div>';
+            return;
+        }
+        
+        // Group results by category
+        const groupedResults = {};
+        results.forEach(result => {
+            if (!groupedResults[result.category]) {
+                groupedResults[result.category] = [];
             }
-        }
-
-        function getActiveOptions() {
-            const activeContent = document.querySelector('.tab-content.active');
-            if (!activeContent) return [];
-            
-            // For search tab, include the search input as the first "option"
-            if (activeContent.id === 'search') {
-                const searchInput = document.getElementById('searchInput');
-                const searchResults = activeContent.querySelectorAll('#searchResults .option-item');
-                return [searchInput, ...searchResults];
-            }
-            
-            return activeContent.querySelectorAll('.option-item');
-        }
-
-        function updateOptionSelection() {
-            const options = getActiveOptions();
-            const searchInput = document.getElementById('searchInput');
-            
-            options.forEach((opt, idx) => {
-                if (idx === currentOption) {
-                    opt.classList.add('selected');
-                    opt.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
-                    
-                    // Show description for selected option
-                    if (opt !== searchInput || opt.hasAttribute('data-description')) {
-                        showDescription(opt);
-                    }
-                } else {
-                    opt.classList.remove('selected');
-                }
-            });
-        }
-
-        function enterOptionMode() {
-            inOptionMode = true;
-            currentOption = 0;
-            
-            sidebar.classList.add('dimmed');
-            tabs[currentTab].classList.add('navigating');
-            tabs[currentTab].classList.remove('active');
-            
-            updateOptionSelection();
-            console.log('Entered option mode - now navigating options');
-        }
-
-        function exitOptionMode() {
-            inOptionMode = false;
-            
-            sidebar.classList.remove('dimmed');
-            tabs[currentTab].classList.remove('navigating');
-            tabs[currentTab].classList.add('active');
-            
-            const options = getActiveOptions();
-            options.forEach(opt => opt.classList.remove('selected'));
-            
-            // Hide description panel when exiting option mode
-            hideDescription();
-            
-            console.log('Exited option mode - back to tab navigation');
-        }
-
-        tabs.forEach(tab => {
-            tab.addEventListener('click', function() {
-                exitOptionMode();
-                switchTab(this);
+            groupedResults[result.category].push(result);
+        });
+        
+        // Build the results HTML
+        let html = '';
+        Object.keys(groupedResults).forEach(category => {
+            html += `<div class="search-category">${category}</div>`;
+            groupedResults[category].forEach(feature => {
+                html += `<div class="option-item" data-feature-name="${feature.name}" data-description="${feature.description}">${feature.name}</div>`;
             });
         });
+        
+        searchResults.innerHTML = html;
+    }
 
-        function closeMenu() {
-            console.log('Close button clicked - Use M to toggle');
+    function switchTab(tabElement) {
+        const tabName = tabElement.getAttribute('data-tab');
+        
+        tabs.forEach(tab => tab.classList.remove('active'));
+        tabContents.forEach(content => content.classList.remove('active'));
+        
+        tabElement.classList.add('active');
+        document.getElementById(tabName).classList.add('active');
+        
+        currentTab = Array.from(tabs).indexOf(tabElement);
+        document.getElementById('counter').innerHTML = (currentTab + 1) + '/10';
+        
+        if (menuState !== 'main') {
+            resetToMain();
         }
+        
+        console.log('Switched to: ' + tabName);
+    }
 
-        window.addEventListener('keydown', function(event) {
-            if (!inOptionMode) {
-                if (event.key === 'ArrowDown') {
-                    event.preventDefault();
-                    currentTab = (currentTab + 1) % tabs.length;
-                    switchTab(tabs[currentTab]);
-                } else if (event.key === 'ArrowUp') {
-                    event.preventDefault();
-                    currentTab = (currentTab - 1 + tabs.length) % tabs.length;
-                    switchTab(tabs[currentTab]);
-                } else if (event.key === 'Enter') {
-                    event.preventDefault();
-                    enterOptionMode();
+    function resetToMain() {
+        menuState = 'main';
+        const serverContent = document.getElementById('server');
+        if (serverContent) {
+            serverContent.innerHTML = originalServerContent;
+        }
+    }
+
+    function getActiveOptions() {
+        const activeContent = document.querySelector('.tab-content.active');
+        if (!activeContent) return [];
+        
+        if (activeContent.id === 'search') {
+            const searchInput = document.getElementById('searchInput');
+            const searchResults = activeContent.querySelectorAll('#searchResults .option-item');
+            return [searchInput, ...searchResults];
+        }
+        
+        return activeContent.querySelectorAll('.option-item');
+    }
+
+    function updateOptionSelection() {
+        const options = getActiveOptions();
+        const searchInput = document.getElementById('searchInput');
+        
+        options.forEach((opt, idx) => {
+            if (idx === currentOption) {
+                opt.classList.add('selected');
+                opt.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+                
+                if (opt !== searchInput || opt.hasAttribute('data-description')) {
+                    showDescription(opt);
                 }
             } else {
-                const options = getActiveOptions();
+                opt.classList.remove('selected');
+            }
+        });
+    }
+
+    function enterOptionMode() {
+        inOptionMode = true;
+        currentOption = 0;
+        
+        sidebar.classList.add('dimmed');
+        tabs[currentTab].classList.add('navigating');
+        tabs[currentTab].classList.remove('active');
+        
+        updateOptionSelection();
+        console.log('Entered option mode - now navigating options');
+    }
+
+    function exitOptionMode() {
+        inOptionMode = false;
+        
+        sidebar.classList.remove('dimmed');
+        tabs[currentTab].classList.remove('navigating');
+        tabs[currentTab].classList.add('active');
+        
+        const options = getActiveOptions();
+        options.forEach(opt => opt.classList.remove('selected'));
+        
+        hideDescription();
+        
+        console.log('Exited option mode - back to tab navigation');
+    }
+
+    tabs.forEach(tab => {
+        tab.addEventListener('click', function() {
+            exitOptionMode();
+            switchTab(this);
+        });
+    });
+
+    function closeMenu() {
+        console.log('Close button clicked - Use M to toggle');
+        // Send message to Lua to close the menu
+        window.postMessage({ action: 'closeMenu' }, '*');
+    }
+
+    window.addEventListener('keydown', function(event) {
+        if (!inOptionMode) {
+            if (event.key === 'ArrowDown') {
+                event.preventDefault();
+                currentTab = (currentTab + 1) % tabs.length;
+                switchTab(tabs[currentTab]);
+            } else if (event.key === 'ArrowUp') {
+                event.preventDefault();
+                currentTab = (currentTab - 1 + tabs.length) % tabs.length;
+                switchTab(tabs[currentTab]);
+            } else if (event.key === 'Enter') {
+                event.preventDefault();
+                enterOptionMode();
+            }
+        } else {
+            const options = getActiveOptions();
+            
+            if (event.key === 'ArrowDown') {
+                event.preventDefault();
+                currentOption = (currentOption + 1) % options.length;
+                updateOptionSelection();
+            } else if (event.key === 'ArrowUp') {
+                event.preventDefault();
+                currentOption = (currentOption - 1 + options.length) % options.length;
+                updateOptionSelection();
+            } else if (event.key === 'Enter') {
+                event.preventDefault();
                 
-                if (event.key === 'ArrowDown') {
-                    event.preventDefault();
-                    currentOption = (currentOption + 1) % options.length;
-                    updateOptionSelection();
-                } else if (event.key === 'ArrowUp') {
-                    event.preventDefault();
-                    currentOption = (currentOption - 1 + options.length) % options.length;
-                    updateOptionSelection();
-                } else if (event.key === 'Enter') {
-                    event.preventDefault();
-                    
-                    const selectedOption = options[currentOption];
-                    const searchInput = document.getElementById('searchInput');
-                    
-                    // Special handling for search tab
-                    const activeTabName = document.querySelector('.tab.active, .tab.navigating').getAttribute('data-tab');
-                    
-                    // If the selected option IS the search input
-                    if (selectedOption === searchInput) {
-                        if (document.activeElement === searchInput) {
-                            // Already focused, blur it
-                            searchInput.blur();
-                            console.log('Search input blurred - exiting typing mode');
-                        } else {
-                            // Focus it
-                            searchInput.focus();
-                            console.log('Search input focused');
-                        }
-                        return;
-                    }
-                    
-                    // If focused on search input but not selected as option, blur it
-                    if (document.activeElement === searchInput && selectedOption !== searchInput) {
+                const selectedOption = options[currentOption];
+                const searchInput = document.getElementById('searchInput');
+                
+                const activeTabName = document.querySelector('.tab.active, .tab.navigating').getAttribute('data-tab');
+                
+                if (selectedOption === searchInput) {
+                    if (document.activeElement === searchInput) {
                         searchInput.blur();
                         console.log('Search input blurred - exiting typing mode');
-                        return;
-                    }
-                    
-                    if (activeTabName === 'search' && searchInput && document.activeElement !== searchInput) {
-                        // Check if we're in option mode with search results
-                        const searchResults = document.querySelectorAll('#searchResults .option-item');
-                        
-                        // If there are search results and we have a selected option
-                        if (searchResults.length > 0 && selectedOption) {
-                            // Check if the selected option is in search results
-                            if (selectedOption.closest('#searchResults')) {
-                                const featureName = selectedOption.getAttribute('data-feature-name');
-                                console.log('Selected search result:', featureName);
-                                
-                                // Check if this option is toggleable
-                                if (toggleableOptions.includes(featureName)) {
-                                    optionStates[featureName] = !optionStates[featureName];
-                                    const isEnabled = optionStates[featureName];
-                                    showNotification(featureName, isEnabled);
-                                } else {
-                                    showNotification(featureName, true);
-                                }
-                                return;
-                            }
-                        }
-                        
-                        // Otherwise, focus the search input
-                        searchInput.focus();
-                        return;
-                    }
-                    
-                    if (!selectedOption) return;
-                    
-                    const optionText = selectedOption.textContent.trim();
-                    console.log('Selected option:', optionText);
-                    
-                    // Check if this option is toggleable
-                    if (toggleableOptions.includes(optionText)) {
-                        // Toggle the state
-                        optionStates[optionText] = !optionStates[optionText];
-                        const isEnabled = optionStates[optionText];
-                        showNotification(optionText, isEnabled);
                     } else {
-                        // Non-toggleable options are always "enabled"
-                        showNotification(optionText, true);
+                        searchInput.focus();
+                        console.log('Search input focused');
                     }
-                } else if (event.key === 'Backspace') {
-                    event.preventDefault();
-                    exitOptionMode();
+                    return;
                 }
-            }
-        });
-
-        originalServerContent = document.getElementById('server').innerHTML;
-
-        function showNotification(optionName, isEnabled) {
-            const existingNotif = document.querySelector('.notification');
-            if (existingNotif) {
-                existingNotif.remove();
-            }
-            
-            const status = isEnabled ? 'Enabled' : 'Disabled';
-            const statusColor = isEnabled ? '#ff0000' : '#666666';
-            
-            const notification = document.createElement('div');
-            notification.className = 'notification';
-            notification.innerHTML = `
-                <div class="notification-title">Success</div>
-                <div class="notification-message">${optionName} Has Been <span style="color: ${statusColor}">${status}</span></div>
-            `;
-            
-            document.body.appendChild(notification);
-            
-            setTimeout(() => {
-                notification.remove();
-            }, 3000);
-            
-            // Add activation animation to the option
-            const options = getActiveOptions();
-            const selectedOption = options[currentOption];
-            if (selectedOption) {
-                selectedOption.classList.add('activating');
-                setTimeout(() => {
-                    selectedOption.classList.remove('activating');
-                }, 600);
+                
+                if (document.activeElement === searchInput && selectedOption !== searchInput) {
+                    searchInput.blur();
+                    console.log('Search input blurred - exiting typing mode');
+                    return;
+                }
+                
+                if (activeTabName === 'search' && searchInput && document.activeElement !== searchInput) {
+                    const searchResults = document.querySelectorAll('#searchResults .option-item');
+                    
+                    if (searchResults.length > 0 && selectedOption) {
+                        if (selectedOption.closest('#searchResults')) {
+                            const featureName = selectedOption.getAttribute('data-feature-name');
+                            console.log('Selected search result:', featureName);
+                            
+                            if (toggleableOptions.includes(featureName)) {
+                                optionStates[featureName] = !optionStates[featureName];
+                                const isEnabled = optionStates[featureName];
+                                showNotification(featureName, isEnabled);
+                                // Send message to Lua
+                                window.postMessage({
+                                    action: 'toggleOption',
+                                    option: featureName,
+                                    enabled: isEnabled
+                                }, '*');
+                            } else {
+                                showNotification(featureName, true);
+                                window.postMessage({
+                                    action: 'toggleOption',
+                                    option: featureName,
+                                    enabled: true
+                                }, '*');
+                            }
+                            return;
+                        }
+                    }
+                    
+                    searchInput.focus();
+                    return;
+                }
+                
+                if (!selectedOption) return;
+                
+                const optionText = selectedOption.textContent.trim();
+                console.log('Selected option:', optionText);
+                
+                if (toggleableOptions.includes(optionText)) {
+                    optionStates[optionText] = !optionStates[optionText];
+                    const isEnabled = optionStates[optionText];
+                    showNotification(optionText, isEnabled);
+                    // Send message to Lua
+                    window.postMessage({
+                        action: 'toggleOption',
+                        option: optionText,
+                        enabled: isEnabled
+                    }, '*');
+                } else {
+                    showNotification(optionText, true);
+                    window.postMessage({
+                        action: 'toggleOption',
+                        option: optionText,
+                        enabled: true
+                    }, '*');
+                }
+            } else if (event.key === 'Backspace') {
+                event.preventDefault();
+                exitOptionMode();
             }
         }
+    });
 
-        window.addEventListener('message', function(event) {
-            console.log('Message from Lua:', event.data);
-        });
+    originalServerContent = document.getElementById('server').innerHTML;
+
+    function showNotification(optionName, isEnabled) {
+        const existingNotif = document.querySelector('.notification');
+        if (existingNotif) {
+            existingNotif.remove();
+        }
         
-        // Initialize features database
-        buildFeaturesDatabase();
+        const status = isEnabled ? 'Enabled' : 'Disabled';
+        const statusColor = isEnabled ? '#ff0000' : '#666666';
         
-        // Search input event listener
-        const searchInput = document.getElementById('searchInput');
-        searchInput.addEventListener('input', function(e) {
-            performSearch(e.target.value);
-        });
+        const notification = document.createElement('div');
+        notification.className = 'notification';
+        notification.innerHTML = `
+            <div class="notification-title">Success</div>
+            <div class="notification-message">${optionName} Has Been <span style="color: ${statusColor}">${status}</span></div>
+        `;
         
-        // Handle clicking on search results
-        document.addEventListener('click', function(e) {
-            if (e.target.classList.contains('option-item')) {
-                // Get feature name from data attribute or text content
-                const featureName = e.target.getAttribute('data-feature-name') || e.target.textContent.trim();
-                
-                // Add activation animation
-                e.target.classList.add('activating');
-                setTimeout(() => {
-                    e.target.classList.remove('activating');
-                }, 600);
-                
-                // Check if this option is toggleable
-                if (toggleableOptions.includes(featureName)) {
-                    optionStates[featureName] = !optionStates[featureName];
-                    const isEnabled = optionStates[featureName];
-                    showNotification(featureName, isEnabled);
-                } else {
-                    showNotification(featureName, true);
-                }
+        document.body.appendChild(notification);
+        
+        setTimeout(() => {
+            notification.remove();
+        }, 3000);
+        
+        const options = getActiveOptions();
+        const selectedOption = options[currentOption];
+        if (selectedOption) {
+            selectedOption.classList.add('activating');
+            setTimeout(() => {
+                selectedOption.classList.remove('activating');
+            }, 600);
+        }
+    }
+
+    window.addEventListener('message', function(event) {
+        console.log('Message from Lua:', event.data);
+    });
+    
+    // Initialize features database
+    buildFeaturesDatabase();
+    
+    // Search input event listener
+    const searchInput = document.getElementById('searchInput');
+    searchInput.addEventListener('input', function(e) {
+        performSearch(e.target.value);
+    });
+    
+    // Handle clicking on options
+    document.addEventListener('click', function(e) {
+        if (e.target.classList.contains('option-item')) {
+            const featureName = e.target.getAttribute('data-feature-name') || e.target.textContent.trim();
+            
+            e.target.classList.add('activating');
+            setTimeout(() => {
+                e.target.classList.remove('activating');
+            }, 600);
+            
+            if (toggleableOptions.includes(featureName)) {
+                optionStates[featureName] = !optionStates[featureName];
+                const isEnabled = optionStates[featureName];
+                showNotification(featureName, isEnabled);
+                window.postMessage({
+                    action: 'toggleOption',
+                    option: featureName,
+                    enabled: isEnabled
+                }, '*');
+            } else {
+                showNotification(featureName, true);
+                window.postMessage({
+                    action: 'toggleOption',
+                    option: featureName,
+                    enabled: true
+                }, '*');
             }
-        });
-        
-        // Show description on hover
-        document.addEventListener('mouseover', function(e) {
-            if (e.target.classList.contains('option-item') && e.target.hasAttribute('data-description')) {
-                showDescription(e.target);
+        }
+    });
+    
+    // Show description on hover
+    document.addEventListener('mouseover', function(e) {
+        if (e.target.classList.contains('option-item') && e.target.hasAttribute('data-description')) {
+            showDescription(e.target);
+        }
+    });
+    
+    // Hide description when mouse leaves
+    document.addEventListener('mouseout', function(e) {
+        if (e.target.classList.contains('option-item')) {
+            if (!inOptionMode) {
+                hideDescription();
             }
-        });
-        
-        // Hide description when mouse leaves
-        document.addEventListener('mouseout', function(e) {
-            if (e.target.classList.contains('option-item')) {
-                // Only hide if not in option mode (keyboard navigation)
-                if (!inOptionMode) {
-                    hideDescription();
-                }
-            }
-        });
-    </script>
+        }
+    });
+
+    // Handle close button click
+    document.querySelector('.close-btn').addEventListener('click', closeMenu);
+</script>
 </body>
 </html>
